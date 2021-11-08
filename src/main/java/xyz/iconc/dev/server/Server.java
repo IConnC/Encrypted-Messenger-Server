@@ -55,10 +55,10 @@ public class Server {
     /**
      *  Gets the server state according to the following conditions.
      *    - If the serverInstance is null, it instantiates a new server instance and returns null.
-     *    - If the serverState is anything other than RUNNING, null.
+     *    - If the serverState is anything other than RUNNING, returns null.
      *    - If the serverState is RUNNING, returns current serverInstance.
      *  <p>
-     *  The method caller must expect null value and check serverState variable for further instructions.
+     *  The method caller must expect a null value and check serverState variable for further instructions.
      *
      * @return      the server instance or null
      */
