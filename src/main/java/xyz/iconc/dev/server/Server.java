@@ -13,6 +13,12 @@ public class Server {
         serverInstance = new Server(PORT, THREAD_COUNT);
     }
 
+    /**
+     * Starts the Server Instance and initializes all components of the server.
+     *
+     * @param  port  the network port that the server listens to for clients.
+     * @param  threads the total amount of worker threads used to process clients and messages.
+     */
     public Server(int port, int threads) {
         serverState = ServerState.STARTING;
 
@@ -23,6 +29,12 @@ public class Server {
         serverState = ServerState.RUNNING;
     }
 
+    /**
+     *  Starts the shutdown process for the server instance.
+     *  <p>
+     *  Sets the serverState variable as STOPPING when run and sets the state as STOPPED
+     *  when completed.
+     */
     public void TerminateServer() {
         serverState = ServerState.STOPPING;
 
@@ -33,6 +45,23 @@ public class Server {
 
 
 
+
+    public void RegisterManagers() {
+
+    }
+
+
+
+    /**
+     *  Gets the server state according to the following conditions.
+     *    - If the serverInstance is null, it instantiates a new server instance and returns null.
+     *    - If the serverState is anything other than RUNNING, null.
+     *    - If the serverState is RUNNING, returns current serverInstance.
+     *  <p>
+     *  The method caller must expect null value and check serverState variable for further instructions.
+     *
+     * @return      the server instance or null
+     */
     public static Server getServerInstance() {
         if (serverInstance == null) {
             serverInstance = new Server(PORT, THREAD_COUNT);
@@ -48,11 +77,24 @@ public class Server {
     }
 
 
+    /**
+     *  Gets the current ServerState in the instance variable serverState.
+     *
+     * @return      the current ServerState
+     */
     public static ServerState getServerState() {
         if (serverInstance == null) return ServerState.STOPPED;
         return serverInstance.serverState;
     }
 
+
+    /**
+     *  The current state that the server is in.
+     *  ServerState.STOPPED, any objects that have knowledge of this state should self destruct.
+     *  ServerState.STOPPING, any objects that have knowledge of this state should start shutting down.
+     *  ServerState.STARTING, any objects that have knowledge of this state should wait until ServerState is RUNNING.
+     *  ServerState.RUNNING, signifies that the server is fully operational
+     */
     public enum ServerState {
         STOPPED,
         STOPPING,
