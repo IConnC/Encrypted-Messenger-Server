@@ -3,6 +3,7 @@ package xyz.iconc.dev.server;
 public class Server {
     public static final int PORT = 28235;
     public static final int THREAD_COUNT = 4;
+    public static final long UNIX_EPOCH_MILLISECONDS_START = 1636752382880L;
     private ServerState serverState;
 
     private static Server serverInstance;
