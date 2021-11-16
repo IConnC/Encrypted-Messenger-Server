@@ -1,5 +1,6 @@
 package xyz.iconc.dev.server.objects;
 
+import javafx.scene.paint.RadialGradient;
 import xyz.iconc.dev.server.Server;
 import xyz.iconc.dev.server.Utility;
 
@@ -10,7 +11,8 @@ import java.util.Arrays;
 import java.util.BitSet;
 
 public class UUID implements Serializable {
-    private static final int RANDOM_NUMBER_MAX_LENGTH = 8;
+    private static final int RANDOM_NUMBER_MAX_LENGTH = 5;
+    private static final int RANDOM_NUMBER_TOP_BOUND = 5; // First number in the maximum number
     private long epochTime; // 42 Bits max (Including 0)
     private int randomNumber;
     private ObjectType objectType;
@@ -37,26 +39,39 @@ public class UUID implements Serializable {
 
         SecureRandom random = new SecureRandom();
 
-        randomNumber = 0;
-        for(int i= 0; i< RANDOM_NUMBER_MAX_LENGTH ; i++) {
-            // Multiplies the random integer in range 0-9 by 10 to the power of i
-            randomNumber += random.nextInt(10) * Math.pow(10,i);
-        }
 
+        randomNumber = 0;
+        int bound = 10;
+
+        for(int i=0; i< RANDOM_NUMBER_MAX_LENGTH ; i++) {
+            if (i == RANDOM_NUMBER_MAX_LENGTH-1) bound = RANDOM_NUMBER_TOP_BOUND;
+            // Multiplies the random integer in range 0-9 by 10 to the power of i
+            randomNumber += random.nextInt(bound) * Math.pow(10,i);
+        }
     }
 
     public long getEpochTime() {
         if (epochTime != 0L) return epochTime;
 
+        epochTime = identifier >> 19;
 
-        return 0L;
+        return epochTime;
+    }
+
+    private long getRandomNumber() {
+        if (randomNumber != 0L) return randomNumber;
+
+        randomNumber = (int) (identifier - getEpochTime()) >> 3;
+
+        return randomNumber;
+
     }
 
     public ObjectType getObjectType() {
         if (objectType != ObjectType.UNDEFINED) return objectType;
+        objectType = ObjectType.fromInteger((int)(identifier - getRandomNumber()) >> 15);
 
-
-        return null;
+        return objectType;
     }
 
     /**
@@ -76,48 +91,32 @@ public class UUID implements Serializable {
     public long getIdentifier() {
         //11111111111111111111111111111111111111111111111111111111111111111
         if (identifier != 0L) return identifier;
-        //[] bytes = new byte[53];
-        //bytes[0] = 4;
-        //System.out.println(bytes[0]);
-        BitSet bitSet = new BitSet(63);
 
-        bitSet.set(62, true);
-        bitSet.set(61, true);
-        //System.out.println(Arrays.toString(bitSet.toByteArray()));
+        long finalIdentifier;
+        long tempNumber;
 
+        tempNumber = epochTime << 19; // Offsets epochTime 19 bits left
+        finalIdentifier = tempNumber;
 
-        long identifierTest = 0L;
+        tempNumber = randomNumber << 3; // Offsets random number 3 bits left
 
-        identifierTest += epochTime;
-        identifierTest = identifierTest << 19;
-        System.out.println(identifierTest);
+        finalIdentifier += tempNumber;
 
-        identifierTest +=  randomNumber;
-        System.out.println(identifierTest);
+        tempNumber = objectType.getTypeId() - 1; // Doesn't offset
+        finalIdentifier += tempNumber;
 
-
-        //System.out.println(Long.BYTES);
-
-
-        //System.out.println(Arrays.toString(Utility.getBinary(identifier)));
-
-
-
-
-
-
-        System.out.println();
-        System.out.println(epochTime);
-        System.out.println(randomNumber);
-        System.out.println(objectType.getTypeId());
-
-        return 0L;
+        return finalIdentifier;
     }
 
 
     public static void main(String[] args) {
 
-        new UUID(ObjectType.ACCOUNT).getIdentifier();
+        UUID t = new UUID(ObjectType.ACCOUNT);
+        System.out.println(t.getIdentifier());
+        System.out.println(t.getEpochTime());
+        System.out.println(t.getObjectType());
+        System.out.println();
+
 
     }
 }
