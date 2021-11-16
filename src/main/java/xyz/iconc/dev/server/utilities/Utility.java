@@ -1,12 +1,7 @@
-package xyz.iconc.dev.server.Utilities;
+package xyz.iconc.dev.server.utilities;
 
-import xyz.iconc.dev.server.objects.Message;
-
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 public class Utility {
