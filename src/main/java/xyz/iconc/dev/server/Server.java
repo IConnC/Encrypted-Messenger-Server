@@ -1,10 +1,13 @@
 package xyz.iconc.dev.server;
 
+import java.util.Objects;
+
 public class Server {
     public static final int PORT = 28235;
     public static final int THREAD_COUNT = 4;
     public static final long UNIX_EPOCH_MILLISECONDS_START = 1636752382880L;
     private ServerState serverState;
+    private Configuration configuration;
 
     private static Server serverInstance;
 
@@ -22,7 +25,7 @@ public class Server {
      */
     public Server(int port, int threads) {
         serverState = ServerState.STARTING;
-
+        configuration = new Configuration();
 
 
 
@@ -36,7 +39,7 @@ public class Server {
      *  Sets the serverState variable as STOPPING when run and sets the state as STOPPED
      *  when completed.
      */
-    public void TerminateServer() {
+    public void terminateServer() {
         serverState = ServerState.STOPPING;
 
 
@@ -47,7 +50,7 @@ public class Server {
 
 
 
-    public void RegisterManagers() {
+    public void registerManagers() {
 
     }
 
@@ -86,6 +89,10 @@ public class Server {
     public static ServerState getServerState() {
         if (serverInstance == null) return ServerState.STOPPED;
         return serverInstance.serverState;
+    }
+
+    public Configuration getConfig() {
+        return configuration;
     }
 
 

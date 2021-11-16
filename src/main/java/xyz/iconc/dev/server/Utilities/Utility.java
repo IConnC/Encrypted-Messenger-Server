@@ -1,4 +1,4 @@
-package xyz.iconc.dev.server;
+package xyz.iconc.dev.server.Utilities;
 
 import xyz.iconc.dev.server.objects.Message;
 

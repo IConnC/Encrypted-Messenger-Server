@@ -1,14 +1,10 @@
 package xyz.iconc.dev.server.objects;
 
-import javafx.scene.paint.RadialGradient;
 import xyz.iconc.dev.server.Server;
-import xyz.iconc.dev.server.Utility;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.BitSet;
 
 public class UUID implements Serializable {
     private static final int RANDOM_NUMBER_MAX_LENGTH = 5;
