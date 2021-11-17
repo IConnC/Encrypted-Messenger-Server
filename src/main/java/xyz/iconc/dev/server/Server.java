@@ -48,6 +48,7 @@ public class Server {
         serverState = ServerState.STOPPING;
 
 
+        databaseManager.shutdown();
 
         serverState = ServerState.STOPPED;
     }

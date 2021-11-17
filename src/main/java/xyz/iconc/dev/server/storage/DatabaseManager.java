@@ -6,12 +6,18 @@ import xyz.iconc.dev.server.Server;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.concurrent.CompletableFuture;
+
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class DatabaseManager {
     private String connectionUrl;
     private Connection connection;
+    private boolean shutdownSignal;
 
     public DatabaseManager(boolean debug) {
+        shutdownSignal = false;
+
         if (!debug) {
             connectionUrl = Server.getConfig().getConfigValue(Configuration.ConfigOptions.DATABASE_CONNECTION_STRING);
         } else {
@@ -29,6 +35,13 @@ public class DatabaseManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+
+
+
+    public void shutdown() {
+        shutdownSignal = true;
     }
 
 
