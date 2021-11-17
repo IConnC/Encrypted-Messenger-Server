@@ -1,19 +1,23 @@
 package xyz.iconc.dev.server;
 
+import xyz.iconc.dev.server.storage.DatabaseManager;
+
 import java.util.Objects;
 
 public class Server {
     public static final int PORT = 28235;
     public static final int THREAD_COUNT = 4;
-    public static final long UNIX_EPOCH_MILLISECONDS_START = 1636752382880L;
+    public static final long UNIX_EPOCH_MILLISECONDS_START = 1636752382880L; // Epoch time in milliseconds of project start
     private ServerState serverState;
-    private Configuration configuration;
+    private static Configuration configuration;
+    private final DatabaseManager databaseManager;
 
     private static Server serverInstance;
 
 
 
     public static void main(String[] args) {
+        configuration = new Configuration();
         serverInstance = new Server(PORT, THREAD_COUNT);
     }
 
@@ -25,7 +29,8 @@ public class Server {
      */
     public Server(int port, int threads) {
         serverState = ServerState.STARTING;
-        configuration = new Configuration();
+
+        databaseManager = new DatabaseManager(false);
 
 
 
@@ -91,8 +96,12 @@ public class Server {
         return serverInstance.serverState;
     }
 
-    public Configuration getConfig() {
+    public static Configuration getConfig() {
         return configuration;
+    }
+
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
     }
 
 

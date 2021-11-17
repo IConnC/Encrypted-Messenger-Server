@@ -21,8 +21,8 @@ public class Configuration {
     }
 
 
-    public Object getConfigValue(ConfigOptions cfg) {
-        return properties.get(cfg.toString());
+    public String getConfigValue(ConfigOptions cfg) {
+        return (String) properties.get(cfg.toString());
     }
 
     /**
@@ -102,7 +102,7 @@ public class Configuration {
         Configuration configuration = new Configuration();
 
     }
-    enum ConfigOptions {
+    public enum ConfigOptions {
         DATABASE_CONNECTION_STRING("jdbc:mysql://[host][,failoverhost][:port]/[database]"),
         DATABASE_USER("user"),
         DATABASE_PASSWORD("password");
