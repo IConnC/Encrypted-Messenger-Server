@@ -1,10 +1,8 @@
 package xyz.iconc.dev.server.storage;
 
-import xyz.iconc.dev.server.objects.IReady;
 import xyz.iconc.dev.server.objects.StartupObject;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NetworkDataManager extends StartupObject implements Runnable {
     private final DatabaseManager databaseManager;
@@ -16,6 +14,9 @@ public class NetworkDataManager extends StartupObject implements Runnable {
     }
 
 
+    public void t () {
+
+    }
 
 
 
@@ -28,8 +29,6 @@ public class NetworkDataManager extends StartupObject implements Runnable {
 
     @Override
     public void run() {
-
-
         // Ensures that databaseManager is ready to be used
         if (!databaseManager.isReady()) {
             CountDownLatch cl = new CountDownLatch(1);

@@ -41,6 +41,8 @@ public class DatabaseManager extends StartupObject implements Runnable {
         initializeDatabaseConnection();
         readyState.set(true);
 
+
+        // Concurrently allows any object requiring a database connection to be called upon when database connection is ready
         latchListLock.lock();
         for (CountDownLatch latch : latchList) {
             latch.countDown();
@@ -48,6 +50,10 @@ public class DatabaseManager extends StartupObject implements Runnable {
         latchListLock.unlock();
     }
 
+
+    /**
+     * Initializes the Database connection and stores it as the variable connection.
+     */
     private void initializeDatabaseConnection() {
         try {
             connection = DriverManager.getConnection(connectionUrl);
@@ -57,10 +63,6 @@ public class DatabaseManager extends StartupObject implements Runnable {
     }
 
 
-    private boolean connectionCheck() {
-        if (connection == null) return false;
-        return readyState.get();
-    }
 
 
 
@@ -71,14 +73,22 @@ public class DatabaseManager extends StartupObject implements Runnable {
     }
 
 
-    public static void main(String[] args) {
-        DatabaseManager databaseManager = new DatabaseManager(true);
 
-    }
 
+    /**
+     *
+     * @return boolean  false if connection is not established and true if connection is established
+     */
     @Override
     public boolean isReady() {
         return readyState.get();
     }
 
+
+
+
+    public static void main(String[] args) {
+        DatabaseManager databaseManager = new DatabaseManager(true);
+
+    }
 }
