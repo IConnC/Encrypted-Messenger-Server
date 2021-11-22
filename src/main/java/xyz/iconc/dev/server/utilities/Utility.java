@@ -1,11 +1,18 @@
 package xyz.iconc.dev.server.utilities;
 
+import xyz.iconc.dev.server.Server;
+
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
+import java.time.Instant;
 import java.util.Arrays;
 
 public class Utility {
 
+
+    public static long GetUnixEpoch() {
+        return Instant.now().toEpochMilli() - Server.UNIX_EPOCH_MILLISECONDS_START;
+    }
 
     public static boolean[] getBitsFromLong(long num) {
         return null;

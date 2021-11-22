@@ -1,4 +1,4 @@
-package xyz.iconc.dev.server.objects;
+package xyz.iconc.dev.server.networkObjects;
 
 import java.io.Serializable;
 

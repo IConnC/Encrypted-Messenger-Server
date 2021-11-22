@@ -1,6 +1,7 @@
-package xyz.iconc.dev.server.objects;
+package xyz.iconc.dev.server.networkObjects;
 
 import xyz.iconc.dev.server.Server;
+import xyz.iconc.dev.server.utilities.Utility;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
@@ -11,13 +12,13 @@ public class UUID implements Serializable {
     private static final int RANDOM_NUMBER_TOP_BOUND = 5; // First number in the maximum number
     private long epochTime; // 42 Bits max (Including 0)
     private int randomNumber;
-    private ObjectType objectType;
+    private NetworkObjectType networkObjectType;
 
     private long identifier; // 18 digit max
 
 
-    public UUID(ObjectType _objectType) {
-        generateDataset(_objectType);
+    public UUID(NetworkObjectType _Network_objectType) {
+        generateDataset(_Network_objectType);
     }
 
     public UUID(long _identifier) {
@@ -27,11 +28,11 @@ public class UUID implements Serializable {
     /**
      * Generates all of the values needed to create a unique identifier.
      */
-    private void generateDataset(ObjectType _objectType) {
-        objectType = _objectType;
+    private void generateDataset(NetworkObjectType _Network_objectType) {
+        networkObjectType = _Network_objectType;
 
         // Starts epoch at project start date.
-        epochTime = Instant.now().toEpochMilli() - Server.UNIX_EPOCH_MILLISECONDS_START;
+        epochTime = Utility.GetUnixEpoch();
 
         SecureRandom random = new SecureRandom();
 
@@ -60,14 +61,13 @@ public class UUID implements Serializable {
         randomNumber = (int) (identifier - getEpochTime()) >> 3;
 
         return randomNumber;
-
     }
 
-    public ObjectType getObjectType() {
-        if (objectType != ObjectType.UNDEFINED) return objectType;
-        objectType = ObjectType.fromInteger((int)(identifier - getRandomNumber()) >> 15);
+    public NetworkObjectType getNetworkObjectType() {
+        if (networkObjectType != NetworkObjectType.UNDEFINED) return networkObjectType;
+        networkObjectType = NetworkObjectType.fromInteger((int)(identifier - getRandomNumber()) >> 15);
 
-        return objectType;
+        return networkObjectType;
     }
 
     /**
@@ -98,7 +98,7 @@ public class UUID implements Serializable {
 
         finalIdentifier += tempNumber;
 
-        tempNumber = objectType.getTypeId() - 1; // Doesn't offset
+        tempNumber = networkObjectType.getTypeId() - 1; // Doesn't offset
         finalIdentifier += tempNumber;
 
         return finalIdentifier;
@@ -107,10 +107,10 @@ public class UUID implements Serializable {
 
     public static void main(String[] args) {
 
-        UUID t = new UUID(ObjectType.ACCOUNT);
+        UUID t = new UUID(NetworkObjectType.ACCOUNT);
         System.out.println(t.getIdentifier());
         System.out.println(t.getEpochTime());
-        System.out.println(t.getObjectType());
+        System.out.println(t.getNetworkObjectType());
         System.out.println();
 
 

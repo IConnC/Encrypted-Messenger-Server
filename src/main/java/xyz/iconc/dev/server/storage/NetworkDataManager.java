@@ -2,6 +2,7 @@ package xyz.iconc.dev.server.storage;
 
 import xyz.iconc.dev.server.objects.StartupObject;
 
+import java.sql.PreparedStatement;
 import java.util.concurrent.CountDownLatch;
 
 public class NetworkDataManager extends StartupObject implements Runnable {
@@ -14,9 +15,7 @@ public class NetworkDataManager extends StartupObject implements Runnable {
     }
 
 
-    public void t () {
 
-    }
 
 
 

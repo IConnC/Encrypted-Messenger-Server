@@ -1,8 +1,7 @@
-package xyz.iconc.dev.server.objects;
+package xyz.iconc.dev.server.networkObjects;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Date;
 
 
 public class Channel implements Serializable {

@@ -103,9 +103,12 @@ public class Configuration {
 
     }
     public enum ConfigOptions {
-        DATABASE_CONNECTION_STRING("jdbc:mysql://[host][,failoverhost][:port]/[database]"),
+        DATABASE_NAME("database_name"),
         DATABASE_USER("user"),
-        DATABASE_PASSWORD("password");
+        DATABASE_PASSWORD("password"),
+        DATABASE_HOST("127.0.0.1"),
+        DATABASE_PORT("3306");
+
         private final String defaultValue;
 
         public String getValue() {
