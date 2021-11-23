@@ -4,6 +4,7 @@ import xyz.iconc.dev.server.Configuration;
 import xyz.iconc.dev.server.Server;
 import xyz.iconc.dev.server.networkObjects.Account;
 import xyz.iconc.dev.server.networkObjects.NetworkObjectType;
+import xyz.iconc.dev.server.objects.IReady;
 import xyz.iconc.dev.server.objects.StartupObject;
 import xyz.iconc.dev.server.networkObjects.UUID;
 
@@ -12,7 +13,7 @@ import java.sql.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class DatabaseManager extends StartupObject implements Runnable {
+public class DatabaseManager implements IReady {
     private AtomicBoolean readyState;
     private final String connectionUrl;
     private Connection connection;
@@ -55,7 +56,7 @@ public class DatabaseManager extends StartupObject implements Runnable {
     public boolean insert_createDatabaseAccount (String username, String hashedPassword) {
         if (!readyState.get()) return false;
 
-        String query = "INSERT INTO ? VALUES (?, ?, ?, ?, 0)";
+        String query = "INSERT INTO accounts VALUES (?, ?, ?, ?, ?)";
 
         UUID uuid = new UUID(NetworkObjectType.ACCOUNT);
 
@@ -66,60 +67,31 @@ public class DatabaseManager extends StartupObject implements Runnable {
         try {
             statement = connection.prepareStatement(query);
 
-            statement.setString(1, databaseName);
+            //statement.setString(1, databaseName);
 
-            statement.setLong(2, newAccount.getUserIdentifier());
-
-
-
-            Blob usernameBlob = connection.createBlob();
-
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(usernameBlob.setBinaryStream(1));
-            objectOutputStream.writeBytes(username);
-            objectOutputStream.close();
-
-            statement.setBlob(3, usernameBlob);
+            statement.setLong(1, newAccount.getUserIdentifier());
 
 
-            statement.setString(4, hashedPassword);
-
-            statement.setTimestamp(5, new Timestamp(newAccount.getDateRegistered()));
+            statement.setString(2, username);
 
 
-            //InputStream accountTypeBinary = (new byte[0]);
-            //statement.setBinaryStream(6, accountTypeBinary);
+            statement.setString(3, hashedPassword);
+
+            statement.setLong(4, newAccount.getDateRegistered());
+
+
+            statement.setInt(5, newAccount.getAccountType());
 
             statement.execute();
-        } catch (SQLException | IOException e) {
+            statement.close();
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
 
-
-
-
-
-
-        return false;
+        return true;
     }
 
-
-
-
-
-    // Not needed - Removal pending
-    @Deprecated
-    @Override
-    public void run() {
-
-
-        // Concurrently allows any object requiring a database connection to be called upon when database connection is ready
-        latchListLock.lock();
-        for (CountDownLatch latch : latchList) {
-            latch.countDown();
-        }
-        latchListLock.unlock();
-    }
 
 
     /**
@@ -160,10 +132,6 @@ public class DatabaseManager extends StartupObject implements Runnable {
 
     public static void main(String[] args) throws InterruptedException {
         DatabaseManager databaseManager = new DatabaseManager(true);
-        Thread dbThread = new Thread(databaseManager);
-        dbThread.start();
-
-        dbThread.join();
 
         databaseManager.insert_createDatabaseAccount("username", "password");
     }
