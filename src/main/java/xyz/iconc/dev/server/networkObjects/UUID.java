@@ -43,7 +43,7 @@ public class UUID implements Serializable {
         for(int i=0; i< RANDOM_NUMBER_MAX_LENGTH ; i++) {
             if (i == RANDOM_NUMBER_MAX_LENGTH-1) bound = RANDOM_NUMBER_TOP_BOUND;
             // Multiplies the random integer in range 0-9 by 10 to the power of i
-            randomNumber += random.nextInt(bound) * Math.pow(10,i);
+            randomNumber += (int) ((double) random.nextInt(bound) * Math.pow(10,i));
         }
     }
 

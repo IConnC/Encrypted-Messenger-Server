@@ -29,6 +29,8 @@ public class Server {
     public Server(int port, int threads) {
         serverState = ServerState.STARTING;
 
+        if (configuration == null) configuration = new Configuration();
+
         databaseManager = new DatabaseManager(false);
 
 
