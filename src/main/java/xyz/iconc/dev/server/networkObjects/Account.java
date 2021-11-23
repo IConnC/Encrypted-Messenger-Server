@@ -13,7 +13,7 @@ public class Account implements Serializable {
 
     /**
      * DO NOT USE TO CONSTRUCT EXISTING ACCOUNT
-     * Meant only to create new accounts.
+     * Intended only to create new accounts.
      *
      * @param _username
      * @param _password

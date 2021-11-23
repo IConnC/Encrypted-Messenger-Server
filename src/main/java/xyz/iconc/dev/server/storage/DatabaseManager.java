@@ -12,7 +12,7 @@ import java.sql.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DatabaseManager implements IReady {
-    private AtomicBoolean readyState;
+    private final AtomicBoolean readyState;
     private final String connectionUrl;
     private Connection connection;
     private final String databaseName;
