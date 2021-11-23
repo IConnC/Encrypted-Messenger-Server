@@ -1,9 +1,6 @@
 package xyz.iconc.dev.server;
 
 import xyz.iconc.dev.server.storage.DatabaseManager;
-import xyz.iconc.dev.server.storage.NetworkDataManager;
-
-import java.util.Objects;
 
 public class Server {
     public static final int PORT = 28235;
@@ -12,7 +9,6 @@ public class Server {
     private ServerState serverState;
     private static Configuration configuration;
     private final DatabaseManager databaseManager;
-    private final NetworkDataManager networkDataManager;
 
 
     private static Server serverInstance;
@@ -34,32 +30,6 @@ public class Server {
         serverState = ServerState.STARTING;
 
         databaseManager = new DatabaseManager(false);
-        networkDataManager = new NetworkDataManager(databaseManager);
-        Thread databaseManagerThread = new Thread(databaseManager, "DatabaseManager Startup");
-        Thread networkDataManagerThread = new Thread(networkDataManager, "Network Data Manager Startup");
-        databaseManagerThread.start();
-        networkDataManagerThread.start();
-
-        // Logic to await all components to start up before sending the signal for the program to be active
-        Thread awaitTaskCompletions = new Thread(() -> {
-
-            try {
-                databaseManagerThread.join();
-                networkDataManagerThread.join();
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            serverState = ServerState.RUNNING;
-        });
-        awaitTaskCompletions.start();
-
-        try {
-            awaitTaskCompletions.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
 
 
     }

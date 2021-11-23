@@ -31,6 +31,8 @@ public class DatabaseManager extends StartupObject implements Runnable {
 
         databaseName = cfg.getConfigValue(Configuration.ConfigOptions.DATABASE_NAME);
 
+
+        // Generating Connection URI for MariaDB server from config.
         String tempUrl = "jdbc:mariadb://";
         tempUrl += cfg.getConfigValue(Configuration.ConfigOptions.DATABASE_HOST) + ":";
         tempUrl += cfg.getConfigValue(Configuration.ConfigOptions.DATABASE_PORT) + "/";
@@ -40,6 +42,12 @@ public class DatabaseManager extends StartupObject implements Runnable {
 
         connectionUrl = tempUrl;
         //DATABASE_CONNECTION_STRING("jdbc:mariadb://[host][,failoverhost][:port]/[database]"),
+
+
+
+        initializeDatabaseConnection();
+        readyState.set(true);
+
     }
 
 
@@ -99,10 +107,11 @@ public class DatabaseManager extends StartupObject implements Runnable {
 
 
 
+    // Not needed - Removal pending
+    @Deprecated
     @Override
     public void run() {
-        initializeDatabaseConnection();
-        readyState.set(true);
+
 
         // Concurrently allows any object requiring a database connection to be called upon when database connection is ready
         latchListLock.lock();
