@@ -50,7 +50,13 @@ public class DatabaseManager implements IReady {
     }
 
 
-
+    /**
+     * Creates a new account in the database
+     *
+     * @param username username of the user requested.
+     * @param hashedPassword hashed & salted password of the account
+     * @return true if operation successful
+     */
     public boolean insert_createAccount(String username, String hashedPassword) {
         if (!readyState.get()) return false;
 
@@ -90,6 +96,12 @@ public class DatabaseManager implements IReady {
         return true;
     }
 
+
+    /**
+     *  Creates a new channel in the database
+     *
+     * @return true if operation successful
+     */
     public boolean insert_createChannel() {
         String sql = "INSERT INTO channels VALUES (?,?)";
 
