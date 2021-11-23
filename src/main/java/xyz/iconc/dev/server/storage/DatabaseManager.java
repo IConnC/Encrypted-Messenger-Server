@@ -3,14 +3,12 @@ package xyz.iconc.dev.server.storage;
 import xyz.iconc.dev.server.Configuration;
 import xyz.iconc.dev.server.Server;
 import xyz.iconc.dev.server.networkObjects.Account;
+import xyz.iconc.dev.server.networkObjects.Channel;
 import xyz.iconc.dev.server.networkObjects.NetworkObjectType;
 import xyz.iconc.dev.server.objects.IReady;
-import xyz.iconc.dev.server.objects.StartupObject;
 import xyz.iconc.dev.server.networkObjects.UUID;
 
-import java.io.*;
 import java.sql.*;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DatabaseManager implements IReady {
@@ -53,7 +51,7 @@ public class DatabaseManager implements IReady {
 
 
 
-    public boolean insert_createDatabaseAccount (String username, String hashedPassword) {
+    public boolean insert_createAccount(String username, String hashedPassword) {
         if (!readyState.get()) return false;
 
         String query = "INSERT INTO accounts VALUES (?, ?, ?, ?, ?)";
@@ -92,6 +90,28 @@ public class DatabaseManager implements IReady {
         return true;
     }
 
+    public boolean insert_createChannel() {
+        String sql = "INSERT INTO channels VALUES (?,?)";
+
+        Channel channel = Channel.CreateChannel();
+
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(sql);
+
+            statement.setLong(1, channel.getChannelIdentifier());
+            statement.setLong(2, channel.getCreationEpoch());
+
+            statement.execute();
+            statement.close();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
 
 
     /**
@@ -133,6 +153,6 @@ public class DatabaseManager implements IReady {
     public static void main(String[] args) throws InterruptedException {
         DatabaseManager databaseManager = new DatabaseManager(true);
 
-        databaseManager.insert_createDatabaseAccount("username", "password");
+        databaseManager.insert_createAccount("username", "password");
     }
 }
