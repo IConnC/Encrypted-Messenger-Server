@@ -125,6 +125,29 @@ public class DatabaseManager implements IReady {
         return true;
     }
 
+    public boolean insert_createMessage(long messageIdentifier, long channelSentIdentifier,
+                                        long channelAuthorIdentifier, String messageContents) {
+        if (!isReady()) return false;
+
+
+        String query = "INSERT INTO messages VALUES (?, ?, ?, ?, ?)";
+
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(query);
+
+
+            statement.setLong(5, new UUID(messageIdentifier).getEpochTime());
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
 
     /**
      * Initializes the Database connection and stores it as the variable connection.
@@ -144,7 +167,19 @@ public class DatabaseManager implements IReady {
 
 
     public void shutdown() {
+        try {
+            if (connection.isClosed()) {
+                return;
+            }
+            connection.commit();
+            connection.close();
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            connection = null;
+        }
     }
 
 
