@@ -15,7 +15,6 @@ public class DatabaseManager implements IReady {
     private final AtomicBoolean readyState;
     private final String connectionUrl;
     private Connection connection;
-    private final String databaseName;
 
     public DatabaseManager(boolean debug) {
         super();
@@ -28,7 +27,7 @@ public class DatabaseManager implements IReady {
             cfg = new Configuration();
         }
 
-        databaseName = cfg.getConfigValue(Configuration.ConfigOptions.DATABASE_NAME);
+        String databaseName = cfg.getConfigValue(Configuration.ConfigOptions.DATABASE_NAME);
 
 
         // Generating Connection URI for MariaDB server from config.
@@ -109,7 +108,7 @@ public class DatabaseManager implements IReady {
      * @return True if successful
      */
     public boolean insert_channel(Channel channel) {
-        String sql = "INSERT INTO channels VALUES (?,?)";
+        String sql = "INSERT INTO channels VALUES (?,?,?)";
 
 
         PreparedStatement statement;
@@ -118,7 +117,7 @@ public class DatabaseManager implements IReady {
 
             statement.setLong(1, channel.getChannelIdentifier());
             statement.setString(2, channel.getChannelName());
-            statement.setLong(2, channel.getCreationEpoch());
+            statement.setLong(3, channel.getCreationEpoch());
 
             statement.execute();
             statement.close();
@@ -185,6 +184,38 @@ public class DatabaseManager implements IReady {
 
 
     /**
+     * Updates a channels name according to the new provided name.
+     *
+     * @param channelIdentifier The Channel Identifier
+     * @param channelName New Channel name
+     * @return True if successful
+     */
+    public boolean update_channelName(long channelIdentifier, String channelName) {
+        if (!isReady()) return false;
+
+        String sql = "UPDATE channels SET channel_name=? WHERE channel_id=?;";
+
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(sql);
+
+            statement.setString(1, channelName);
+
+            statement.setLong(2, channelIdentifier);
+
+            statement.execute();
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /**
      * Initializes the Database connection and stores it as the variable connection.
      */
     private void initializeDatabaseConnection() {
@@ -235,8 +266,9 @@ public class DatabaseManager implements IReady {
     public static void main(String[] args) throws InterruptedException {
         DatabaseManager databaseManager = new DatabaseManager(true);
 
-        databaseManager.insert_createAccount("username", "password");
-        databaseManager.insert_createChannel("test");
+        databaseManager.update_channelName(6969L, "NEW CHANNEL NAME");
+        //databaseManager.insert_createAccount("username", "password");
+        //databaseManager.insert_createChannel("test");
 
     }
 }
