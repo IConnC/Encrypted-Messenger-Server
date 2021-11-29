@@ -102,16 +102,17 @@ public class DatabaseManager implements IReady {
      *
      * @return true if operation successful
      */
-    public boolean insert_createChannel() {
+    public boolean insert_createChannel(String channelName) {
         String sql = "INSERT INTO channels VALUES (?,?)";
 
-        Channel channel = Channel.CreateChannel();
+        Channel channel = Channel.CreateChannel(channelName);
 
         PreparedStatement statement;
         try {
             statement = connection.prepareStatement(sql);
 
             statement.setLong(1, channel.getChannelIdentifier());
+            statement.setString(2, channelName);
             statement.setLong(2, channel.getCreationEpoch());
 
             statement.execute();
@@ -125,6 +126,16 @@ public class DatabaseManager implements IReady {
         return true;
     }
 
+
+    /**
+     *  Inserts a new message into the database
+     *
+     * @param messageIdentifier The messages identifier
+     * @param channelSentIdentifier The channel's identifier in which the message is sent
+     * @param channelAuthorIdentifier The author of the message identifier
+     * @param messageContents The encrypted contents of the message
+     * @return True if operation is successful
+     */
     public boolean insert_createMessage(long messageIdentifier, long channelSentIdentifier,
                                         long channelAuthorIdentifier, String messageContents) {
         if (!isReady()) return false;
@@ -136,9 +147,14 @@ public class DatabaseManager implements IReady {
         try {
             statement = connection.prepareStatement(query);
 
-
+            statement.setLong(1, messageIdentifier);
+            statement.setLong(2, channelSentIdentifier);
+            statement.setLong(3, channelAuthorIdentifier);
+            statement.setLong(4, messageIdentifier);
             statement.setLong(5, new UUID(messageIdentifier).getEpochTime());
 
+            statement.execute();
+            statement.close();
 
         } catch (SQLException e) {
             e.printStackTrace();

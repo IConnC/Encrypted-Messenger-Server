@@ -5,8 +5,9 @@ import java.time.Instant;
 
 
 public class Channel implements Serializable {
-    private long channelIdentifier;
-    private long creationEpoch;
+    private final long channelIdentifier;
+    private String channelName;
+    private final long creationEpoch;
 
     /**
      * Only use if Channel is already created.
@@ -14,8 +15,9 @@ public class Channel implements Serializable {
      * @param _identifier UUID identifier object
      * @param _timestamp UUID timestamp of creation
      */
-    public Channel(long _identifier, long _timestamp) {
+    public Channel(long _identifier, String _channelName, long _timestamp) {
         channelIdentifier = _identifier;
+        channelName = _channelName;
         creationEpoch = _timestamp;
     }
 
@@ -23,9 +25,10 @@ public class Channel implements Serializable {
      * Use only if Channel doesn't already exist.
      * Preferred to use CreateChannel method
      */
-    public Channel() {
-        Channel channel = CreateChannel();
+    public Channel(String _channelName) {
+        Channel channel = CreateChannel(_channelName);
         channelIdentifier = channel.getChannelIdentifier();
+        channelName = _channelName;
         creationEpoch = channel.getCreationEpoch();
     }
 
@@ -39,10 +42,18 @@ public class Channel implements Serializable {
         return creationEpoch;
     }
 
+    public String getChannelName() {
+        return channelName;
+    }
 
-    public static Channel CreateChannel() {
+    public void setChannelName(String _channelName) {
+        channelName = _channelName;
+    }
+
+
+    public static Channel CreateChannel(String channelName) {
         UUID uuid = new UUID(NetworkObjectType.CHANNEL);
-        return new Channel(uuid.getIdentifier(), uuid.getEpochTime());
+        return new Channel(uuid.getIdentifier(), channelName, uuid.getEpochTime());
     }
 
 
@@ -51,7 +62,7 @@ public class Channel implements Serializable {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
-        Channel channel = new Channel();
+        Channel channel = new Channel("");
         FileOutputStream file = new FileOutputStream
                 ("./test.txt");
 
