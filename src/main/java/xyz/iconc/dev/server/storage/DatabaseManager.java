@@ -51,6 +51,44 @@ public class DatabaseManager implements IReady {
 
 
     /**
+     * Inserts a given account object into the database.
+     *
+     * @param account the account to insert into the database
+     * @return True if successful
+     */
+    public boolean insert_account(Account account) {
+        if (!readyState.get()) return false;
+
+        String query = "INSERT INTO accounts VALUES (?, ?, ?, ?, ?)";
+
+
+
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(query);
+
+            statement.setLong(1, account.getUserIdentifier());
+
+            statement.setString(2, account.getUsername());
+
+            statement.setString(3, account.getHashedPassword());
+
+            statement.setLong(4, account.getDateRegistered());
+
+            statement.setInt(5, account.getAccountType());
+
+            statement.execute();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+
+    }
+
+    /**
      * Creates a new account in the database
      *
      * @param username username of the user requested.
@@ -58,66 +96,33 @@ public class DatabaseManager implements IReady {
      * @return true if operation successful
      */
     public boolean insert_createAccount(String username, String hashedPassword) {
-        if (!readyState.get()) return false;
-
-        String query = "INSERT INTO accounts VALUES (?, ?, ?, ?, ?)";
-
-        UUID uuid = new UUID(NetworkObjectType.ACCOUNT);
 
         Account newAccount = new Account(username, hashedPassword);
-
-
-        PreparedStatement statement;
-        try {
-            statement = connection.prepareStatement(query);
-
-            //statement.setString(1, databaseName);
-
-            statement.setLong(1, newAccount.getUserIdentifier());
-
-
-            statement.setString(2, username);
-
-
-            statement.setString(3, hashedPassword);
-
-            statement.setLong(4, newAccount.getDateRegistered());
-
-
-            statement.setInt(5, newAccount.getAccountType());
-
-            statement.execute();
-            statement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        return true;
+        return insert_account(newAccount);
     }
 
 
     /**
-     *  Creates a new channel in the database
+     * Inserts given channel object into database.
      *
-     * @return true if operation successful
+     * @param channel channel to insert into the database
+     * @return True if successful
      */
-    public boolean insert_createChannel(String channelName) {
+    public boolean insert_channel(Channel channel) {
         String sql = "INSERT INTO channels VALUES (?,?)";
 
-        Channel channel = Channel.CreateChannel(channelName);
 
         PreparedStatement statement;
         try {
             statement = connection.prepareStatement(sql);
 
             statement.setLong(1, channel.getChannelIdentifier());
-            statement.setString(2, channelName);
+            statement.setString(2, channel.getChannelName());
             statement.setLong(2, channel.getCreationEpoch());
 
             statement.execute();
             statement.close();
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -125,6 +130,20 @@ public class DatabaseManager implements IReady {
 
         return true;
     }
+
+    /**
+     *  Creates a new blank channel.
+     *
+     * @return true if operation successful
+     */
+    public boolean insert_createChannel(String channelName) {
+
+        Channel channel = Channel.CreateChannel(channelName);
+
+        return insert_channel(channel);
+    }
+
+
 
 
     /**
@@ -217,5 +236,7 @@ public class DatabaseManager implements IReady {
         DatabaseManager databaseManager = new DatabaseManager(true);
 
         databaseManager.insert_createAccount("username", "password");
+        databaseManager.insert_createChannel("test");
+
     }
 }
