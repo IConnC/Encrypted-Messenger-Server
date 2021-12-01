@@ -215,6 +215,112 @@ public class DatabaseManager implements IReady {
     }
 
 
+
+    private boolean delete_fromIdentifier(String tableName, String identifierPrefix, long identifier) {
+        if (!isReady()) return false;
+
+        String sql = "DELETE FROM ? WHERE ?=?";
+
+        PreparedStatement statement;
+
+        try {
+            statement = connection.prepareStatement(sql);
+
+            statement.setString(1, tableName);
+            statement.setString(2, identifierPrefix + "_identifier");
+            statement.setLong(3, identifier);
+
+            statement.execute();
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+
+    }
+
+    /**
+     * Deletes the given account from the database
+     *
+     * @param userIdentifier The identifier of the user to delete
+     * @return True if successful
+     */
+    public boolean delete_account(long userIdentifier) {
+        UUID uuid = new UUID(userIdentifier);
+        if (uuid.getNetworkObjectType() != NetworkObjectType.ACCOUNT) return false;
+
+        return delete_fromIdentifier("accounts", "user", userIdentifier);
+    }
+
+    /**
+     * Deletes the given channel from the database.
+     *
+     * @param channelIdentifier The identifier of the channel to delete
+     * @return True if successful
+     */
+    public boolean delete_channel(long channelIdentifier) {
+        UUID uuid = new UUID(channelIdentifier);
+        if (uuid.getNetworkObjectType() != NetworkObjectType.CHANNEL) return false;
+
+        return delete_fromIdentifier("messages", "message", channelIdentifier);
+    }
+
+
+    /**
+     * Deletes the given message from the messages table.
+     *
+     * @param messageIdentifier Identifier of the message to delete
+     * @return True if successful
+     */
+    public boolean delete_message(long messageIdentifier) {
+        UUID uuid = new UUID(messageIdentifier);
+        if (uuid.getNetworkObjectType() != NetworkObjectType.MESSAGE) return false;
+
+        return delete_fromIdentifier("messages", "message", messageIdentifier);
+
+    }
+
+    /**
+     * Removes the member from the channel
+     *
+     * @param userIdentifier identifier of the user to remove from the channel
+     * @param channelIdentifier identifier of the channel to remove the user from
+     * @return True if successful
+     */
+    public boolean delete_channelMember(long userIdentifier, long channelIdentifier) {
+        UUID uuid = new UUID(userIdentifier);
+        if (uuid.getNetworkObjectType() != NetworkObjectType.ACCOUNT) return false;
+
+        if (!isReady()) return false;
+
+        String sql = "DELETE FROM channel_members WHERE userIdentifier=?, channelIdentfifier=?";
+
+        PreparedStatement statement;
+
+        try {
+            statement = connection.prepareStatement(sql);
+
+            statement.setLong(1, userIdentifier);
+            statement.setLong(2, channelIdentifier);
+
+            statement.execute();
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+
+
     /**
      * Initializes the Database connection and stores it as the variable connection.
      */
