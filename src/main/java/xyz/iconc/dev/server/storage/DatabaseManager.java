@@ -1,12 +1,10 @@
 package xyz.iconc.dev.server.storage;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import xyz.iconc.dev.server.Configuration;
 import xyz.iconc.dev.server.Server;
-import xyz.iconc.dev.server.networkObjects.Account;
-import xyz.iconc.dev.server.networkObjects.Channel;
-import xyz.iconc.dev.server.networkObjects.NetworkObjectType;
+import xyz.iconc.dev.server.networkObjects.*;
 import xyz.iconc.dev.server.objects.IReady;
-import xyz.iconc.dev.server.networkObjects.UUID;
 
 import java.sql.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,8 +42,13 @@ public class DatabaseManager implements IReady {
 
 
         initializeDatabaseConnection();
+        //connection.getAutoCommit();
         readyState.set(true);
 
+    }
+
+    private void createFreshDatabase() {
+        throw new NotImplementedException();
     }
 
 
@@ -87,19 +90,6 @@ public class DatabaseManager implements IReady {
 
     }
 
-    /**
-     * Creates a new account in the database
-     *
-     * @param username username of the user requested.
-     * @param hashedPassword hashed & salted password of the account
-     * @return true if operation successful
-     */
-    public boolean insert_createAccount(String username, String hashedPassword) {
-
-        Account newAccount = new Account(username, hashedPassword);
-        return insert_account(newAccount);
-    }
-
 
     /**
      * Inserts given channel object into database.
@@ -130,32 +120,37 @@ public class DatabaseManager implements IReady {
         return true;
     }
 
-    /**
-     *  Creates a new blank channel.
-     *
-     * @return true if operation successful
-     */
-    public boolean insert_createChannel(String channelName) {
+    public boolean insert_channelMember(long channelIdentifier, long userIdentifier) {
 
-        Channel channel = Channel.CreateChannel(channelName);
+        String sql = "INSERT INTO channel_members VALUES (?,?)";
 
-        return insert_channel(channel);
+
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(sql);
+
+            statement.setLong(1, channelIdentifier);
+            statement.setLong(2, userIdentifier);
+
+            statement.execute();
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
-
-
 
 
     /**
      *  Inserts a new message into the database
      *
-     * @param messageIdentifier The messages identifier
-     * @param channelSentIdentifier The channel's identifier in which the message is sent
-     * @param channelAuthorIdentifier The author of the message identifier
-     * @param messageContents The encrypted contents of the message
+     * @param message The message object to insert
      * @return True if operation is successful
      */
-    public boolean insert_createMessage(long messageIdentifier, long channelSentIdentifier,
-                                        long channelAuthorIdentifier, String messageContents) {
+    public boolean insert_message(Message message) {
         if (!isReady()) return false;
 
 
@@ -165,11 +160,11 @@ public class DatabaseManager implements IReady {
         try {
             statement = connection.prepareStatement(query);
 
-            statement.setLong(1, messageIdentifier);
-            statement.setLong(2, channelSentIdentifier);
-            statement.setLong(3, channelAuthorIdentifier);
-            statement.setLong(4, messageIdentifier);
-            statement.setLong(5, new UUID(messageIdentifier).getEpochTime());
+            statement.setLong(1, message.getMessageIdentifier());
+            statement.setLong(2, message.getChannelIdentifier());
+            statement.setLong(3, message.getSenderIdentifier());
+            statement.setString(4, message.getMessageContents());
+            statement.setLong(5, new UUID(message.getMessageIdentifier()).getEpochTime());
 
             statement.execute();
             statement.close();
@@ -339,6 +334,8 @@ public class DatabaseManager implements IReady {
 
 
     public void shutdown() {
+        readyState.set(false);
+
         try {
             if (connection.isClosed()) {
                 return;
