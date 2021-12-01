@@ -1,7 +1,5 @@
 package xyz.iconc.dev.server;
 
-import xyz.iconc.dev.server.storage.DatabaseManager;
-
 public class Server {
     public static final int PORT = 28235;
     public static final int THREAD_COUNT = 4;

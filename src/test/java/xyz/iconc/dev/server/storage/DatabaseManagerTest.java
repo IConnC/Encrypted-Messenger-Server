@@ -3,11 +3,10 @@ package xyz.iconc.dev.server.storage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import xyz.iconc.dev.server.DatabaseManager;
 import xyz.iconc.dev.server.networkObjects.Account;
 import xyz.iconc.dev.server.networkObjects.Channel;
 import xyz.iconc.dev.server.networkObjects.Message;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class DatabaseManagerTest {
 

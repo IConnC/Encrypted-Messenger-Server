@@ -1,8 +1,6 @@
-package xyz.iconc.dev.server.storage;
+package xyz.iconc.dev.server;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import xyz.iconc.dev.server.Configuration;
-import xyz.iconc.dev.server.Server;
 import xyz.iconc.dev.server.networkObjects.*;
 import xyz.iconc.dev.server.objects.IReady;
 
