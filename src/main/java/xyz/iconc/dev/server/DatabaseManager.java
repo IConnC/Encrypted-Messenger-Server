@@ -59,7 +59,7 @@ public class DatabaseManager implements IReady {
     public boolean insert_account(Account account) {
         if (!readyState.get()) return false;
 
-        String query = "INSERT INTO accounts VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO accounts VALUES (?, ?, ?, ?, ?, ?)";
 
 
 
@@ -72,6 +72,8 @@ public class DatabaseManager implements IReady {
             statement.setString(2, account.getUsername());
 
             statement.setString(3, account.getHashedPassword());
+
+            statement.setString(4, (String) account.getSalt());
 
             statement.setLong(4, account.getDateRegistered());
 
