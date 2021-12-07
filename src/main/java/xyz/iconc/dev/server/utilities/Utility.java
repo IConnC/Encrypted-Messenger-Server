@@ -1,6 +1,9 @@
 package xyz.iconc.dev.server.utilities;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.iconc.dev.server.Server;
+import xyz.iconc.dev.server.security.DatabaseRealm;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
@@ -12,6 +15,16 @@ public class Utility {
 
     public static long GetUnixEpoch() {
         return Instant.now().toEpochMilli() - Server.UNIX_EPOCH_MILLISECONDS_START;
+    }
+
+
+    /**
+     * Initializes logger for class.
+     * @param cls The Class that needs a logger instance
+     * @return Logger ready to be used
+     */
+    public static Logger GetLogger(Class cls) {
+        return LoggerFactory.getLogger(cls);
     }
 
     public static boolean[] getBitsFromLong(long num) {

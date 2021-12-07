@@ -4,8 +4,11 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import xyz.iconc.dev.server.networkObjects.*;
 import xyz.iconc.dev.server.objects.IReady;
 
+import javax.sql.DataSource;
+import java.io.PrintWriter;
 import java.sql.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 public class DatabaseManager implements IReady {
     private final AtomicBoolean readyState;
@@ -374,4 +377,24 @@ public class DatabaseManager implements IReady {
         //databaseManager.insert_createChannel("test");
 
     }
+
+    /**
+     * <p>Attempts to establish a connection with the data source that
+     * this {@code DataSource} object represents.
+     *
+     * @return a connection to the data source
+     * @throws SQLException        if a database access error occurs
+     * @throws SQLTimeoutException when the driver has determined that the
+     *                             timeout value specified by the {@code setLoginTimeout} method
+     *                             has been exceeded and has at least tried to cancel the
+     *                             current database connection attempt
+     */
+    public Connection getConnection() {
+        if (!isReady()) return null;
+        if (connection != null) {
+            return connection;
+        }
+        return null;
+    }
+
 }

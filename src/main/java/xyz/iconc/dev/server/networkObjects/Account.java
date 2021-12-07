@@ -52,8 +52,12 @@ public class Account implements Serializable {
     }
 
 
-
-
+    /**
+     *
+     * @param _username Username of new account
+     * @param _password Password of new account
+     * @return Initialized Account with hashed password.
+     */
     private static Account InitializeNewAccount(String _username, String _password) {
         UUID uuid = new UUID(NetworkObjectType.ACCOUNT);
 
@@ -64,6 +68,11 @@ public class Account implements Serializable {
                 uuid.getEpochTime(), 0);
     }
 
+
+    /**
+     * Generates and returns a randomized salt.
+     * @return The random salt
+     */
     private static Object generateSalt() {
         RandomNumberGenerator rng = new SecureRandomNumberGenerator();
         return rng.nextBytes();
