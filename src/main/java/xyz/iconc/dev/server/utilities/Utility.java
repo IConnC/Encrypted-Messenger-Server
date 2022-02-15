@@ -3,10 +3,8 @@ package xyz.iconc.dev.server.utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.iconc.dev.server.Server;
-import xyz.iconc.dev.server.security.DatabaseRealm;
 
 import java.nio.ByteBuffer;
-import java.security.MessageDigest;
 import java.time.Instant;
 import java.util.Arrays;
 

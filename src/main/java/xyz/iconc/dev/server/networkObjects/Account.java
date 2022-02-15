@@ -1,8 +1,5 @@
 package xyz.iconc.dev.server.networkObjects;
 
-import org.apache.shiro.crypto.RandomNumberGenerator;
-import org.apache.shiro.crypto.SecureRandomNumberGenerator;
-import org.apache.shiro.crypto.hash.Sha512Hash;
 import xyz.iconc.dev.server.utilities.Utility;
 
 import java.io.Serializable;
@@ -61,8 +58,8 @@ public class Account implements Serializable {
     private static Account InitializeNewAccount(String _username, String _password) {
         UUID uuid = new UUID(NetworkObjectType.ACCOUNT);
 
-        Object salt = generateSalt();
-        String hashedPasswordBase64 = new Sha512Hash(_password, salt, 1024).toBase64();
+        Object salt = "generateSalt();";
+        String hashedPasswordBase64 = "";//new Sha512Hash(_password, salt, 1024).toBase64();
 
         return new Account(uuid.getIdentifier(), _username, hashedPasswordBase64, salt,
                 uuid.getEpochTime(), 0);
@@ -74,8 +71,8 @@ public class Account implements Serializable {
      * @return The random salt
      */
     private static Object generateSalt() {
-        RandomNumberGenerator rng = new SecureRandomNumberGenerator();
-        return rng.nextBytes();
+        //RandomNumberGenerator rng = new SecureRandomNumberGenerator();
+        return "";//rng.nextBytes();
     }
 
 
@@ -88,11 +85,11 @@ public class Account implements Serializable {
     }
 
     public String getHashedPassword() {
-        return hashedPassword;
+        return "hashedPassword";
     }
 
     public Object getSalt() {
-        return salt;
+        return "salt";
     }
 
     public long getDateRegistered() {

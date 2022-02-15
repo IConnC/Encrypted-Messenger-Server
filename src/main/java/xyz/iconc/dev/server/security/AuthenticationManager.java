@@ -1,27 +1,17 @@
 package xyz.iconc.dev.server.security;
 
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.env.BasicIniEnvironment;
-import org.apache.shiro.env.Environment;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import java.security.NoSuchAlgorithmException;
 
 public class AuthenticationManager {
-    private static String INI_PATH = "classpath:shiro.ini";
-
     public AuthenticationManager() {
-        loadNewSecurityManager();
+
     }
 
-    private void loadNewSecurityManager() {
-        Environment env = new BasicIniEnvironment(INI_PATH);
+    public static void main(String[] args) throws NoSuchAlgorithmException {
+        int maxKeySize = javax.crypto.Cipher.getMaxAllowedKeyLength("AES");
+        System.out.println(maxKeySize);
 
-        SecurityUtils.setSecurityManager(env.getSecurityManager());
     }
-
-    
-
-
-    public static void main(String[] args) {
-        AuthenticationManager authenticationManager = new AuthenticationManager();
-    }
-
 }

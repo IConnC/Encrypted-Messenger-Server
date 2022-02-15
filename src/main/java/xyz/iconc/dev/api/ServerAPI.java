@@ -10,6 +10,9 @@ import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
 import xyz.iconc.dev.api.server.UserServerResource;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ServerAPI  extends Application {
     private final Router router = new Router();
 
@@ -39,7 +42,7 @@ public class ServerAPI  extends Application {
     }
 
     public static void main(String[] args) throws Exception {
-        new ServerAPI();
+        ServerAPI server = new ServerAPI();
     }
 
 }
