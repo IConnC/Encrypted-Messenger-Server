@@ -71,7 +71,7 @@ public class UUID implements Serializable {
     }
 
     /**
-     * Converts all values created in the constructor and transforms it into a 64 byte long array.
+     * Converts all values created in the constructor and transforms it into a 64 bit long array.
      *
      * 53 bits maximum size for long
      * 400000000000000000
