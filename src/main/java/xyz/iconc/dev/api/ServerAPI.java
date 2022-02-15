@@ -22,9 +22,9 @@ public class ServerAPI  extends Application {
         VirtualHost host = component.getDefaultHost();
 
 
-        host.attach("/users/{userIdentifier}", UserServerResource.class);
+        host.attach("/users/{identifier}", UserServerResource.class);
 
-        host.attach("/messages/{messageIdentifier}", MessageServerResource.class);
+        host.attach("/messages/{identifier}", MessageServerResource.class);
 
         //host.attach("/users/{user}", UserServerResource.class);
 
