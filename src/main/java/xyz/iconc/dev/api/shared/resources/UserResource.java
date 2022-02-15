@@ -5,7 +5,7 @@ import org.restlet.resource.Get;
 import org.restlet.resource.Put;
 import xyz.iconc.dev.api.shared.objects.User;
 
-public interface UserResource {
+public interface UserResource extends BaseResource {
     @Get("json")
     public User retrieve();
 

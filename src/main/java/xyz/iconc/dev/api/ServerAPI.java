@@ -5,13 +5,9 @@ import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
-import xyz.iconc.dev.api.server.UserServerResource;
-
-import java.util.ArrayList;
-import java.util.List;
+import xyz.iconc.dev.api.server.serverResources.UserServerResource;
 
 public class ServerAPI  extends Application {
     private final Router router = new Router();
@@ -25,7 +21,11 @@ public class ServerAPI  extends Application {
         VirtualHost host = component.getDefaultHost();
 
 
-        host.attach("/users/123", UserServerResource.class);
+        host.attach("/users/{userIdentifier}", UserServerResource.class);
+
+        host.attach("/message/{messageIdentifier}", UserServerResource.class);
+
+        //host.attach("/users/{user}", UserServerResource.class);
 
         Server server = new Server(Protocol.HTTP, 80, component);
 

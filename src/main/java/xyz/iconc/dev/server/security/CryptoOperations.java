@@ -40,8 +40,7 @@ public class CryptoOperations {
     public static byte[] decryptAES512(byte[] encrypted, Key key) throws Exception {
         Security.addProvider(new BouncyCastleProvider());
         Cipher cipher = Cipher.getInstance("AES", "BC");
-        cipher.
-        cipher.init(Cipher.DECRYPT_MODE, key, AlgorithmParameterGenerator.getInstance().generateParameters());
+        cipher.init(Cipher.DECRYPT_MODE, key);
 
         return cipher.doFinal(encrypted);
     }
