@@ -11,7 +11,7 @@ public class MessageServerResource extends ServerResource implements MessageReso
 
     @Override
     public void doInit() {
-        getAttribute("getIdentifier");
+        message = new Message(getAttribute("getIdentifier"));
     }
 
     @Override
@@ -20,7 +20,7 @@ public class MessageServerResource extends ServerResource implements MessageReso
     }
 
     @Override
-    public void store(User contact) {
+    public void store(Message message) {
 
     }
 

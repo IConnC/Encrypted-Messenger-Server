@@ -7,6 +7,7 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
+import xyz.iconc.dev.api.server.serverResources.MessageServerResource;
 import xyz.iconc.dev.api.server.serverResources.UserServerResource;
 
 public class ServerAPI  extends Application {
@@ -23,7 +24,7 @@ public class ServerAPI  extends Application {
 
         host.attach("/users/{userIdentifier}", UserServerResource.class);
 
-        host.attach("/message/{messageIdentifier}", UserServerResource.class);
+        host.attach("/messages/{messageIdentifier}", MessageServerResource.class);
 
         //host.attach("/users/{user}", UserServerResource.class);
 

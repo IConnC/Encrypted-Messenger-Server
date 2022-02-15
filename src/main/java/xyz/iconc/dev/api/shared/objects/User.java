@@ -8,6 +8,7 @@ public class User implements Serializable {
 
     public User(long identifier) {
         this.identifier = identifier;
+        this.username = "";
     }
 
     public String getUsername() {

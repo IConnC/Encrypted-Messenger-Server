@@ -15,7 +15,6 @@ public class UserServerResource extends ServerResource implements UserResource {
         try {
             rawIdentifier = Long.parseLong(getAttribute("userIdentifier"));
         } catch (NumberFormatException e) {
-            e.printStackTrace();
             doError(Status.CLIENT_ERROR_BAD_REQUEST);
             return;
         }
