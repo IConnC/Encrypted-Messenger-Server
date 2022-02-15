@@ -6,20 +6,21 @@ import java.util.Base64;
 
 public class Message implements Serializable {
 
-    private volatile long identifier;
-    private volatile byte[] messageContents;
+    private final long identifier;
+    private volatile String messageContents;
 
     public Message(long identifier) {
         this.identifier = identifier;
+        messageContents = "";
     }
 
     public long getIdentifier() {
         return identifier;
     }
 
-    public byte[] getMessageContents() {
-        if (messageContents.length == 0) {
-            messageContents = Base64.getEncoder().encode( "TEST MESSAGE 123".getBytes(StandardCharsets.UTF_8));
+    public String getMessageContents() {
+        if (messageContents.length() == 0) {
+            messageContents = Base64.getEncoder().encodeToString("TEST MESSAGE 123".getBytes(StandardCharsets.UTF_8));
         }
 
         return messageContents;

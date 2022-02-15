@@ -15,8 +15,8 @@ public class MessageServerResource extends ServerResourceAbstract implements Mes
     }
 
     @Override
-    public User retrieve() {
-        return null;
+    public Message retrieve() {
+        return message;
     }
 
     @Override

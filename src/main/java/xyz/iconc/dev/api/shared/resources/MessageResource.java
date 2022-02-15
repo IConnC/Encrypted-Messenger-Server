@@ -8,7 +8,7 @@ import xyz.iconc.dev.api.shared.objects.User;
 
 public interface MessageResource extends BaseResource {
     @Get("json")
-    public User retrieve();
+    public Message retrieve();
 
     @Put("json")
     public void store(Message message);
