@@ -26,4 +26,5 @@ hs_err_pid*
 # Custom
 server.properties
 target/*
-.idea/*
+/.github/
+/.idea/
