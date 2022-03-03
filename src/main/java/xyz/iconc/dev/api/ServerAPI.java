@@ -12,22 +12,33 @@ import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.MemoryRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.iconc.dev.api.server.serverResources.BulkMessageServerResource;
 import xyz.iconc.dev.api.server.serverResources.MessageServerResource;
 import xyz.iconc.dev.api.server.serverResources.UserServerResource;
+import xyz.iconc.dev.api.shared.resources.BulkMessageResource;
+import xyz.iconc.dev.server.DatabaseManager;
+
+import javax.sql.DataSource;
 
 public class ServerAPI  extends Application {
     private static Logger LOGGER = LoggerFactory.getLogger(ServerAPI.class);
     private final Router router = new Router();
+    private final DatabaseManager databaseManager;
 
-    public ServerAPI() {
+    public ServerAPI(DatabaseManager databaseManager) {
         super();
-        LOGGER.info("Contacts application starting...");
+        LOGGER.info("Application starting...");
+
+
+        LOGGER.info("Attempting connection with database...");
+        this.databaseManager = databaseManager;
+
+        LOGGER.info("Connected to database!");
 
 
         // Attach application to http://localhost:9000/v1
         Component c = new Component();
         c.getServers().add(Protocol.HTTP, 9000);
-
 
 
         c.getDefaultHost().attach("/v1", this);
@@ -52,14 +63,10 @@ public class ServerAPI  extends Application {
                 getContext(), ChallengeScheme.HTTP_BASIC, "realm");
         DatabaseVerifier databaseVerifier = new DatabaseVerifier();
 
-        // Create in-memory users and roles.
-        MemoryRealm realm = new MemoryRealm();
-
-
         // - Verifier : checks authentication
         // - Enroler : to check authorization (roles)
         apiGuard.setVerifier(databaseVerifier);
-        apiGuard.setEnroler(realm.getEnroler());
+        apiGuard.setEnroler(new DatabaseEnroler());
 
         // Provide your own authentication checks by extending SecretVerifier or
         // LocalVerifier classes
@@ -77,7 +84,8 @@ public class ServerAPI  extends Application {
         // and to http://localhost:9000/v1/companies/
         Router router = new Router(getContext());
 
-        router.attach("/users/{identifier}", UserServerResource.class);
+        router.attach("/user/{identifier}", UserServerResource.class);
+        router.attach("/message/{identifier}", MessageServerResource.class);
 
         return router;
     }
@@ -86,6 +94,7 @@ public class ServerAPI  extends Application {
         Router router = new Router();
 
         //router.attach("/ping", PingServerResource.class);
+        router.attach("/messages/{query}", BulkMessageServerResource.class);
 
         return router;
     }
@@ -105,7 +114,8 @@ public class ServerAPI  extends Application {
     }
 
     public static void main(String[] args) throws Exception {
-        ServerAPI server = new ServerAPI();
+        DatabaseManager databaseManager = new DatabaseManager(true);
+        ServerAPI server = new ServerAPI(databaseManager);
     }
 
 }

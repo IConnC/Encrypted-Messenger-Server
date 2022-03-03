@@ -1,5 +1,6 @@
 package xyz.iconc.dev.server;
 
+import org.mariadb.jdbc.internal.util.dao.Identifier;
 import xyz.iconc.dev.server.networkObjects.*;
 import xyz.iconc.dev.server.objects.IReady;
 
@@ -47,6 +48,37 @@ public class DatabaseManager implements IReady {
 
     }
 
+
+    public Message get_message(long identifier) {
+        String sql = "SELECT FROM messages WHERE message_identifier=?";
+
+        Message message;
+
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(sql);
+
+            statement.setLong(1, identifier);
+
+            statement.execute();
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return message;
+    }
+
+
+    /**
+     *  Overload for get_message(long identifier)
+     * @param uuid UUID of the message to get from the database
+     * @return Returns Message if successful or null if not
+     */
+    public Message get_message(UUID uuid) {
+        return get_message(uuid.getIdentifier());
+    }
 
 
     /**
@@ -262,7 +294,6 @@ public class DatabaseManager implements IReady {
         return delete_fromIdentifier("messages", "message", channelIdentifier);
     }
 
-
     /**
      * Deletes the given message from the messages table.
      *
@@ -312,9 +343,6 @@ public class DatabaseManager implements IReady {
     }
 
 
-
-
-
     /**
      * Initializes the Database connection and stores it as the variable connection.
      */
@@ -325,11 +353,6 @@ public class DatabaseManager implements IReady {
             e.printStackTrace();
         }
     }
-
-
-
-
-
 
 
     public void shutdown() {
@@ -349,9 +372,6 @@ public class DatabaseManager implements IReady {
             connection = null;
         }
     }
-
-
-
 
     /**
      *
@@ -391,6 +411,53 @@ public class DatabaseManager implements IReady {
             return connection;
         }
         return null;
+    }
+
+    public class ApiDataSource implements DataSource {
+        @Override
+        public Connection getConnection() throws SQLException {
+            return null;
+        }
+
+        @Override
+        public Connection getConnection(String username, String password) throws SQLException {
+            return null;
+        }
+
+        @Override
+        public <T> T unwrap(Class<T> iface) throws SQLException {
+            return null;
+        }
+
+        @Override
+        public boolean isWrapperFor(Class<?> iface) throws SQLException {
+            return false;
+        }
+
+        @Override
+        public PrintWriter getLogWriter() throws SQLException {
+            return null;
+        }
+
+        @Override
+        public void setLogWriter(PrintWriter out) throws SQLException {
+
+        }
+
+        @Override
+        public void setLoginTimeout(int seconds) throws SQLException {
+
+        }
+
+        @Override
+        public int getLoginTimeout() throws SQLException {
+            return 0;
+        }
+
+        @Override
+        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+            return null;
+        }
     }
 
 }

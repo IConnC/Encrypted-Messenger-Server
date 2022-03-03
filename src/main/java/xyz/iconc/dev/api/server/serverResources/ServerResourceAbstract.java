@@ -15,7 +15,8 @@ public abstract class ServerResourceAbstract extends ServerResource {
     public void doInit() {
         long rawIdentifier = Long.MIN_VALUE;
         try {
-            rawIdentifier = Long.parseLong(getAttribute("identifier"));
+            String identifierAttribute = getAttribute("identifier");
+            rawIdentifier = Long.parseLong(identifierAttribute);
         } catch (NumberFormatException e) {
             doError(Status.CLIENT_ERROR_BAD_REQUEST);
             return;
@@ -27,5 +28,4 @@ public abstract class ServerResourceAbstract extends ServerResource {
         }
         identifier = rawIdentifier;
     }
-
 }
