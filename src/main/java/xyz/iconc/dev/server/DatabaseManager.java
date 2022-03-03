@@ -1,6 +1,5 @@
 package xyz.iconc.dev.server;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import xyz.iconc.dev.server.networkObjects.*;
 import xyz.iconc.dev.server.objects.IReady;
 
@@ -48,9 +47,6 @@ public class DatabaseManager implements IReady {
 
     }
 
-    private void createFreshDatabase() {
-        throw new NotImplementedException();
-    }
 
 
     /**
