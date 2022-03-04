@@ -37,7 +37,6 @@ public class Configuration {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
 

@@ -1,12 +1,17 @@
-package xyz.iconc.dev.api.server;
+package xyz.iconc.dev.api.server.serverResources;
 
-import org.restlet.resource.ServerResource;
 import xyz.iconc.dev.api.shared.objects.User;
 import xyz.iconc.dev.api.shared.resources.UserResource;
 
-public class UserServerResource extends ServerResource implements UserResource {
+public class UserServerResource extends ServerResourceAbstract implements UserResource {
 
-    private static volatile User user = new User("TestUsername");
+    private static volatile User user;
+
+    @Override
+    public void doInit() {
+        super.doInit();
+        user = new User(identifier);
+    }
 
     @Override
     public User retrieve() {
