@@ -50,7 +50,7 @@ public class DatabaseManager implements IReady {
 
 
     public Message get_message(long identifier) {
-        String sql = "SELECT FROM messages WHERE message_identifier=?";
+        String sql = "SELECT * FROM messages WHERE message_identifier=?";
 
         Message message;
 
@@ -60,7 +60,14 @@ public class DatabaseManager implements IReady {
 
             statement.setLong(1, identifier);
 
-            statement.execute();
+            ResultSet rs = statement.executeQuery();
+
+            rs.next();
+
+            message = new Message(identifier, rs.getLong(3),
+                    rs.getLong(2), rs.getString(4));
+
+            rs.close();
             statement.close();
 
         } catch (SQLException e) {
@@ -79,7 +86,6 @@ public class DatabaseManager implements IReady {
     public Message get_message(UUID uuid) {
         return get_message(uuid.getIdentifier());
     }
-
 
     /**
      * Inserts a given account object into the database.
@@ -120,7 +126,6 @@ public class DatabaseManager implements IReady {
         return true;
 
     }
-
 
     /**
      * Inserts given channel object into database.
@@ -174,7 +179,6 @@ public class DatabaseManager implements IReady {
         return true;
     }
 
-
     /**
      *  Inserts a new message into the database
      *
@@ -208,7 +212,6 @@ public class DatabaseManager implements IReady {
         return true;
     }
 
-
     /**
      * Updates a channels name according to the new provided name.
      *
@@ -239,8 +242,6 @@ public class DatabaseManager implements IReady {
 
         return true;
     }
-
-
 
     private boolean delete_fromIdentifier(String tableName, String identifierPrefix, long identifier) {
         if (!isReady()) return false;
@@ -342,7 +343,6 @@ public class DatabaseManager implements IReady {
         return true;
     }
 
-
     /**
      * Initializes the Database connection and stores it as the variable connection.
      */
@@ -353,7 +353,6 @@ public class DatabaseManager implements IReady {
             e.printStackTrace();
         }
     }
-
 
     public void shutdown() {
         readyState.set(false);
@@ -388,7 +387,8 @@ public class DatabaseManager implements IReady {
     public static void main(String[] args) throws InterruptedException {
         DatabaseManager databaseManager = new DatabaseManager(true);
 
-        databaseManager.update_channelName(6969L, "NEW CHANNEL NAME");
+        //databaseManager.update_channelName(6969L, "NEW CHANNEL NAME");
+        System.out.println(databaseManager.get_message(123));
         //databaseManager.insert_createAccount("username", "password");
         //databaseManager.insert_createChannel("test");
 
@@ -412,52 +412,4 @@ public class DatabaseManager implements IReady {
         }
         return null;
     }
-
-    public class ApiDataSource implements DataSource {
-        @Override
-        public Connection getConnection() throws SQLException {
-            return null;
-        }
-
-        @Override
-        public Connection getConnection(String username, String password) throws SQLException {
-            return null;
-        }
-
-        @Override
-        public <T> T unwrap(Class<T> iface) throws SQLException {
-            return null;
-        }
-
-        @Override
-        public boolean isWrapperFor(Class<?> iface) throws SQLException {
-            return false;
-        }
-
-        @Override
-        public PrintWriter getLogWriter() throws SQLException {
-            return null;
-        }
-
-        @Override
-        public void setLogWriter(PrintWriter out) throws SQLException {
-
-        }
-
-        @Override
-        public void setLoginTimeout(int seconds) throws SQLException {
-
-        }
-
-        @Override
-        public int getLoginTimeout() throws SQLException {
-            return 0;
-        }
-
-        @Override
-        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-            return null;
-        }
-    }
-
 }

@@ -3,9 +3,9 @@ package xyz.iconc.dev.server.networkObjects;
 import java.io.Serializable;
 
 public class Message implements Serializable {
+    private final long messageIdentifier;
     private final long senderIdentifier;
     private final long channelIdentifier;
-    private final long messageIdentifier;
     private final String messageContents;
 
 
@@ -57,5 +57,10 @@ public class Message implements Serializable {
 
     public String getMessageContents() {
         return messageContents;
+    }
+
+    @Override
+    public String toString() {
+        return "Message Identifier: " + messageIdentifier + " | Sender Identifier: " + senderIdentifier + " | Channel Identifier: " + channelIdentifier;
     }
 }
