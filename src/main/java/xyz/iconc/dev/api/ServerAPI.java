@@ -3,13 +3,10 @@ package xyz.iconc.dev.api;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
-import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.routing.Router;
-import org.restlet.routing.VirtualHost;
 import org.restlet.security.ChallengeAuthenticator;
-import org.restlet.security.MemoryRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.iconc.dev.api.server.serverResources.BulkMessageServerResource;
@@ -18,12 +15,11 @@ import xyz.iconc.dev.api.server.serverResources.UserServerResource;
 import xyz.iconc.dev.api.shared.resources.BulkMessageResource;
 import xyz.iconc.dev.server.DatabaseManager;
 
-import javax.sql.DataSource;
 
 public class ServerAPI  extends Application {
     private static Logger LOGGER = LoggerFactory.getLogger(ServerAPI.class);
     private final Router router = new Router();
-    private final DatabaseManager databaseManager;
+    private static DatabaseManager DATABASE_MANAGER = null;
 
     public ServerAPI(DatabaseManager databaseManager) {
         super();
@@ -31,7 +27,7 @@ public class ServerAPI  extends Application {
 
 
         LOGGER.info("Attempting connection with database...");
-        this.databaseManager = databaseManager;
+        DATABASE_MANAGER = databaseManager;
 
         LOGGER.info("Connected to database!");
 
@@ -85,7 +81,10 @@ public class ServerAPI  extends Application {
         Router router = new Router(getContext());
 
         router.attach("/user/{identifier}", UserServerResource.class);
+
         router.attach("/message/{identifier}", MessageServerResource.class);
+        router.attach("/message", MessageServerResource.class);
+        router.attach("/message/", MessageServerResource.class);
 
         return router;
     }
@@ -111,6 +110,10 @@ public class ServerAPI  extends Application {
         publicRouter.attachDefault(apiGuard);
 
         return publicRouter;
+    }
+
+    public static DatabaseManager getDatabaseManager() {
+        return DATABASE_MANAGER;
     }
 
     public static void main(String[] args) throws Exception {

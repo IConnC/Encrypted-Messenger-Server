@@ -1,14 +1,9 @@
 package xyz.iconc.dev.server;
 
-import org.mariadb.jdbc.internal.util.dao.Identifier;
-import xyz.iconc.dev.server.networkObjects.*;
+import xyz.iconc.dev.server.apiObjects.*;
 import xyz.iconc.dev.server.objects.IReady;
-
-import javax.sql.DataSource;
-import java.io.PrintWriter;
 import java.sql.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Logger;
 
 public class DatabaseManager implements IReady {
     private final AtomicBoolean readyState;
@@ -387,11 +382,7 @@ public class DatabaseManager implements IReady {
     public static void main(String[] args) throws InterruptedException {
         DatabaseManager databaseManager = new DatabaseManager(true);
 
-        //databaseManager.update_channelName(6969L, "NEW CHANNEL NAME");
         System.out.println(databaseManager.get_message(123));
-        //databaseManager.insert_createAccount("username", "password");
-        //databaseManager.insert_createChannel("test");
-
     }
 
     /**
