@@ -1,4 +1,4 @@
-package xyz.iconc.dev.server.apiObjects;
+package xyz.iconc.dev.objects;
 
 public enum NetworkObjectType {
     UNDEFINED(0), MESSAGE(1), CHANNEL(2), ACCOUNT(3);

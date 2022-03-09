@@ -1,4 +1,4 @@
-package xyz.iconc.dev.server.apiObjects;
+package xyz.iconc.dev.objects;
 
 import xyz.iconc.dev.server.utilities.Utility;
 
@@ -100,6 +100,10 @@ public class UUID implements Serializable {
         finalIdentifier += tempNumber;
 
         return finalIdentifier;
+    }
+
+    public static boolean ValidateUUID(long identifier) {
+        return true;
     }
 
 

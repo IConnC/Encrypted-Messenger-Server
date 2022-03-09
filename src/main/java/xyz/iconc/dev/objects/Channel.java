@@ -1,4 +1,4 @@
-package xyz.iconc.dev.server.apiObjects;
+package xyz.iconc.dev.objects;
 
 import java.io.*;
 

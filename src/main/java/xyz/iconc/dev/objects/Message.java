@@ -1,4 +1,4 @@
-package xyz.iconc.dev.server.apiObjects;
+package xyz.iconc.dev.objects;
 
 import java.io.Serializable;
 
@@ -8,6 +8,13 @@ public class Message implements Serializable {
     private final long channelIdentifier;
     private final String messageContents;
 
+
+    public Message(){
+        messageContents = "";
+        senderIdentifier = 0L;
+        messageIdentifier = 0L;
+        channelIdentifier = 0L;
+    }
 
     /**
      * Used to create a new instance of a message with no associated identifier
@@ -61,6 +68,7 @@ public class Message implements Serializable {
 
     @Override
     public String toString() {
-        return "Message Identifier: " + messageIdentifier + " | Sender Identifier: " + senderIdentifier + " | Channel Identifier: " + channelIdentifier;
+        return "Message Identifier: " + messageIdentifier + " | Sender Identifier: " + senderIdentifier +
+                " | Channel Identifier: " + channelIdentifier + " | Message Contents: " + messageContents;
     }
 }

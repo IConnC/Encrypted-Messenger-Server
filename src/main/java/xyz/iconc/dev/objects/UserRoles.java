@@ -1,4 +1,4 @@
-package xyz.iconc.dev.server.apiObjects;
+package xyz.iconc.dev.objects;
 
 public enum UserRoles {
     NORMAL("normal"),

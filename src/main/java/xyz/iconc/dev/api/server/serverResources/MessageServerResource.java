@@ -2,10 +2,11 @@ package xyz.iconc.dev.api.server.serverResources;
 
 import org.restlet.data.Status;
 import xyz.iconc.dev.api.ServerAPI;
+import xyz.iconc.dev.objects.PostMessage;
 import xyz.iconc.dev.api.shared.utilities.Validation;
-import xyz.iconc.dev.server.apiObjects.Message;
-import xyz.iconc.dev.api.shared.objects.User;
+import xyz.iconc.dev.objects.Message;
 import xyz.iconc.dev.api.shared.resources.MessageResource;
+import xyz.iconc.dev.objects.UUID;
 
 public class MessageServerResource extends ServerResourceAbstract implements MessageResource {
 
@@ -17,7 +18,7 @@ public class MessageServerResource extends ServerResourceAbstract implements Mes
         long rawIdentifier = Long.MIN_VALUE;
         try {
             String identifierAttribute = getAttribute("identifier");
-            if (identifierAttribute == null)
+            if (identifierAttribute == null) // If no identifier is provided don't allow retrieve method, allow post
             {
                 identifierProvided = false;
                 return;
@@ -43,13 +44,35 @@ public class MessageServerResource extends ServerResourceAbstract implements Mes
             doError(Status.CLIENT_ERROR_FORBIDDEN);
             return null;
         }
+
         return message;
     }
 
+
+    /**
+     * Inserts new message into the database with input validation
+     *
+     * @param message The initial limited message constraints.
+     *                Contains Channel sent and Encrypted Message Contents
+     * @return Identifier which message has been assigned
+     */
     @Override
-    public void store(Message message) {
-        // Implement verifying information based on web client session identifier
-        ServerAPI.getDatabaseManager().insert_message(message);
+    public long store(PostMessage message) {
+        long senderIdentifier = Long.parseLong(getClientInfo().getUser().getIdentifier());
+        if (!UUID.ValidateUUID(senderIdentifier)) {
+            doError(Status.CLIENT_ERROR_FORBIDDEN);
+            return 0L;
+        }
+
+
+        // Creates context filled message with provided information and information from authentication to
+        //      prevent malicious data from being entered.
+        Message fullMessage = new Message(senderIdentifier, message.getChannelIdentifier(),
+                message.getMessageContents());
+
+        ServerAPI.getDatabaseManager().insert_message(fullMessage); // Inserts fully formed message into database
+
+        return fullMessage.getMessageIdentifier(); // Returns the final UUID of the message
     }
 
     @Override

@@ -4,7 +4,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.ServerResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xyz.iconc.dev.api.shared.objects.Message;
+import xyz.iconc.dev.objects.PostMessage;
 import xyz.iconc.dev.api.shared.resources.BulkMessageResource;
 import xyz.iconc.dev.api.shared.utilities.Validation;
 
@@ -38,7 +38,7 @@ public class BulkMessageServerResource extends ServerResource implements BulkMes
     }
 
     @Override
-    public Message[] retrieve() {
-        return new Message[0];
+    public PostMessage[] retrieve() {
+        return new PostMessage[0];
     }
 }

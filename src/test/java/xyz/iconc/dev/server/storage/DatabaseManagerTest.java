@@ -4,9 +4,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import xyz.iconc.dev.server.DatabaseManager;
-import xyz.iconc.dev.server.apiObjects.Account;
-import xyz.iconc.dev.server.apiObjects.Channel;
-import xyz.iconc.dev.server.apiObjects.Message;
+import xyz.iconc.dev.objects.Account;
+import xyz.iconc.dev.objects.Channel;
+import xyz.iconc.dev.objects.Message;
 
 class DatabaseManagerTest {
 

@@ -1,6 +1,6 @@
 package xyz.iconc.dev.server;
 
-import xyz.iconc.dev.server.apiObjects.*;
+import xyz.iconc.dev.objects.*;
 import xyz.iconc.dev.server.objects.IReady;
 import java.sql.*;
 import java.util.concurrent.atomic.AtomicBoolean;
