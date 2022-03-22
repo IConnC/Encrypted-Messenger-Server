@@ -1,12 +1,16 @@
 package xyz.iconc.dev.objects;
 
+import xyz.iconc.dev.server.Server;
+
 import java.io.*;
+import java.util.List;
 
 
 public class Channel implements Serializable {
     private final long channelIdentifier;
     private String channelName;
     private final long creationEpoch;
+    private List<Message> messages;
 
     /**
      * Only use if Channel is already created.
@@ -18,6 +22,7 @@ public class Channel implements Serializable {
         channelIdentifier = _identifier;
         channelName = _channelName;
         creationEpoch = _timestamp;
+        //Server.getServerInstance().getDatabaseManager().get_message()
     }
 
     /**

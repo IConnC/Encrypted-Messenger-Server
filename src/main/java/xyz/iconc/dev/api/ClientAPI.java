@@ -18,6 +18,12 @@ public class ClientAPI {
         return generateClientResource("http://localhost:9000/v1/message/");
     }
 
+    private ClientResource generateChannelPollGET(long channelIdentifier) {
+        return generateClientResource("http://localhost:9000/v1/channel/" + channelIdentifier + "/poll");
+    }
+
+
+
     private ClientResource generateClientResource(String uri) {
         ClientResource clientResource = new ClientResource(uri);
 
