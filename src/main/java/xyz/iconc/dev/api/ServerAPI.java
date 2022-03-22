@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import xyz.iconc.dev.api.server.serverResources.BulkMessageServerResource;
 import xyz.iconc.dev.api.server.serverResources.MessageServerResource;
 import xyz.iconc.dev.api.server.serverResources.UserServerResource;
-import xyz.iconc.dev.api.shared.resources.BulkMessageResource;
 import xyz.iconc.dev.server.DatabaseManager;
 
 

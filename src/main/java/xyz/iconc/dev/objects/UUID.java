@@ -4,6 +4,7 @@ import xyz.iconc.dev.server.utilities.Utility;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
+import java.util.Scanner;
 
 public class UUID implements Serializable {
     private static final int RANDOM_NUMBER_MAX_LENGTH = 5;
@@ -108,11 +109,33 @@ public class UUID implements Serializable {
 
 
     public static void main(String[] args) {
+        NetworkObjectType type = NetworkObjectType.UNDEFINED;
 
-        UUID t = new UUID(NetworkObjectType.ACCOUNT);
-        System.out.println(t.getIdentifier());
-        System.out.println(t.getEpochTime());
-        System.out.println(t.getNetworkObjectType());
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("UUID Generation Tool");
+        System.out.println("Please enter network object type: (MESSAGE, CHANNEL, ACCOUNT)");
+        String in = scanner.nextLine();
+
+        switch (in) {
+            case "MESSAGE":
+                type = NetworkObjectType.MESSAGE;
+                break;
+            case "CHANNEL":
+                type = NetworkObjectType.CHANNEL;
+                break;
+            case "ACCOUNT":
+                type = NetworkObjectType.ACCOUNT;
+                break;
+            default:
+                System.out.println("Invalid Input");
+                System.exit(1);
+        }
+
+        System.out.println("Output: ");
+        UUID t = new UUID(type);
+        System.out.println("Identifier: " + t.getIdentifier());
+        System.out.println("Epoch Time: " + t.getEpochTime());
+        System.out.println("Network Object Type: " + t.getNetworkObjectType());
         System.out.println();
 
 
