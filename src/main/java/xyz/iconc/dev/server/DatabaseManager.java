@@ -3,6 +3,8 @@ package xyz.iconc.dev.server;
 import xyz.iconc.dev.objects.*;
 import xyz.iconc.dev.server.objects.IReady;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DatabaseManager implements IReady {
@@ -72,6 +74,36 @@ public class DatabaseManager implements IReady {
         return message;
     }
 
+    public List<Message> get_messages(long channelIdentifier) {
+        String sql = "SELECT * FROM messages WHERE channel_sent_id=?";
+
+        List<Message> messages = new ArrayList<>();
+
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(sql);
+
+            statement.setLong(1, channelIdentifier);
+
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                Message tempMessage = new Message(rs.getLong(1),
+                        rs.getLong(3), channelIdentifier, rs.getString(4));
+                messages.add(tempMessage);
+            }
+
+            rs.close();
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+
+        return messages;
+    }
 
     /**
      *  Overload for get_message(long identifier)
@@ -82,13 +114,99 @@ public class DatabaseManager implements IReady {
         return get_message(uuid.getIdentifier());
     }
 
+    public List<User> get_channelMembers(long channelIdentifier) {
+        String sql = "SELECT * FROM channel_members WHERE channel_identifier=?";
+
+        List<User> channelMembers = new ArrayList<>();
+
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(sql);
+
+            statement.setLong(1, channelIdentifier);
+
+            ResultSet rs = statement.executeQuery();
+
+
+            while (rs.next()) {
+                channelMembers.add(
+                        new User(rs.getLong(2)));
+            }
+
+            rs.close();
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return channelMembers;
+    }
+
+    public List<Channel> get_channels() {
+        String sql = "SELECT * FROM channels";
+
+        List<Channel> channels = new ArrayList<>();
+
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(sql);
+
+
+            ResultSet rs = statement.executeQuery();
+
+
+            while (rs.next()) {
+                channels.add(new Channel(rs.getLong(1),
+                        rs.getString(2), rs.getLong(3)));
+            }
+
+            rs.close();
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return channels;
+    }
+
+    public User get_account(long identifier) {
+        String sql = "SELECT * FROM accounts WHERE user_identifier=?";
+
+        User user = null;
+
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(sql);
+
+            statement.setLong(1, identifier);
+
+            ResultSet rs = statement.executeQuery();
+
+            user = new User(rs.getLong(1), rs.getString(2),
+                    rs.getString(4), rs.getString(5),
+                    rs.getLong(6), rs.getInt(7));
+
+
+            rs.close();
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return user;
+
+    }
+
     /**
      * Inserts a given account object into the database.
      *
-     * @param account the account to insert into the database
+     * @param user the account to insert into the database
      * @return True if successful
      */
-    public boolean insert_account(Account account) {
+    public boolean insert_account(User user) {
         if (!readyState.get()) return false;
 
         String query = "INSERT INTO accounts VALUES (?, ?, ?, ?, ?, ?)";
@@ -99,17 +217,17 @@ public class DatabaseManager implements IReady {
         try {
             statement = connection.prepareStatement(query);
 
-            statement.setLong(1, account.getUserIdentifier());
+            statement.setLong(1, user.getUserIdentifier());
 
-            statement.setString(2, account.getUsername());
+            statement.setString(2, user.getUsername());
 
-            statement.setString(3, account.getHashedPassword());
+            statement.setString(3, user.getHashedPassword());
 
-            statement.setString(4, (String) account.getSalt());
+            statement.setString(4, (String) user.getSalt());
 
-            statement.setLong(4, account.getDateRegistered());
+            statement.setLong(4, user.getDateRegistered());
 
-            statement.setInt(5, account.getAccountType());
+            statement.setInt(5, user.getAccountType());
 
             statement.execute();
             statement.close();

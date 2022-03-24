@@ -93,7 +93,7 @@ public class UUID implements Serializable {
         tempNumber = epochTime << 19; // Offsets epochTime 19 bits left
         finalIdentifier = tempNumber;
 
-        tempNumber = randomNumber << 3; // Offsets random number 3 bits left
+        tempNumber = (long) randomNumber << 3; // Offsets random number 3 bits left
 
         finalIdentifier += tempNumber;
 

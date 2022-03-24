@@ -4,21 +4,21 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import xyz.iconc.dev.server.DatabaseManager;
-import xyz.iconc.dev.objects.Account;
+import xyz.iconc.dev.objects.User;
 import xyz.iconc.dev.objects.Channel;
 import xyz.iconc.dev.objects.Message;
 
 class DatabaseManagerTest {
 
     DatabaseManager databaseManager;
-    Account account;
+    User user;
     Channel channel;
     Message message;
 
     public DatabaseManagerTest() {
-        account = new Account("TestAccount", "TestHashedPassword");
+        user = new User("TestAccount", "TestHashedPassword");
         channel = new Channel("Test Chanel");
-        message = new Message(account.getUserIdentifier(), channel.getChannelIdentifier(), "Message Contents");
+        message = new Message(user.getUserIdentifier(), channel.getChannelIdentifier(), "Message Contents");
     }
 
     @BeforeEach
@@ -52,7 +52,7 @@ class DatabaseManagerTest {
 
     @Test
     void insert_account() {
-        assert databaseManager.insert_account(account) : "Account Insert Statement Failed";
+        assert databaseManager.insert_account(user) : "Account Insert Statement Failed";
 
     }
 
@@ -69,7 +69,7 @@ class DatabaseManagerTest {
 
     @Test
     void insert_channelMember() {
-        assert databaseManager.insert_channelMember(channel.getChannelIdentifier(), account.getUserIdentifier());
+        assert databaseManager.insert_channelMember(channel.getChannelIdentifier(), user.getUserIdentifier());
     }
 
     @Test
@@ -80,7 +80,7 @@ class DatabaseManagerTest {
 
     @Test
     void delete_account() {
-        assert databaseManager.delete_account(account.getUserIdentifier());
+        assert databaseManager.delete_account(user.getUserIdentifier());
     }
 
     @Test
@@ -95,7 +95,7 @@ class DatabaseManagerTest {
 
     @Test
     void delete_channelMember() {
-        assert databaseManager.delete_channelMember(account.getUserIdentifier(), channel.getChannelIdentifier());
+        assert databaseManager.delete_channelMember(user.getUserIdentifier(), channel.getChannelIdentifier());
     }
 
     @Test

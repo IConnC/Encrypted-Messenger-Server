@@ -16,6 +16,7 @@ public class Server {
     public static void main(String[] args) {
         configuration = new Configuration();
         serverInstance = new Server(PORT, THREAD_COUNT);
+        serverInstance.run();
     }
 
     /**
@@ -30,8 +31,17 @@ public class Server {
         if (configuration == null) configuration = new Configuration();
 
         databaseManager = new DatabaseManager(false);
+    }
 
+    public void run() {
+        serverState = ServerState.STARTING;
 
+        ResourceManager resourceManager = new ResourceManager();
+
+        System.out.println("here");
+        resourceManager.start();
+
+        serverState = ServerState.RUNNING;
     }
 
     /**
@@ -71,11 +81,11 @@ public class Server {
     public static Server getServerInstance() {
         if (serverInstance == null) {
             serverInstance = new Server(PORT, THREAD_COUNT);
-            return null;
+            return getServerInstance();
         }
         ServerState currentServerState = serverInstance.serverState;
 
-        if (currentServerState == ServerState.RUNNING) {
+        if (currentServerState == ServerState.STARTING || currentServerState == ServerState.RUNNING) {
             return serverInstance;
         }
 

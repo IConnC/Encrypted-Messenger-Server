@@ -1,16 +1,20 @@
 package xyz.iconc.dev.objects;
 
+import xyz.iconc.dev.server.DatabaseManager;
 import xyz.iconc.dev.server.Server;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class Channel implements Serializable {
     private final long channelIdentifier;
     private String channelName;
     private final long creationEpoch;
-    private List<Message> messages;
+    private CopyOnWriteArrayList<Message> messages;
+    private CopyOnWriteArrayList<User> subscribedUsers;
 
     /**
      * Only use if Channel is already created.
@@ -22,7 +26,15 @@ public class Channel implements Serializable {
         channelIdentifier = _identifier;
         channelName = _channelName;
         creationEpoch = _timestamp;
-        //Server.getServerInstance().getDatabaseManager().get_message()
+
+        messages = new CopyOnWriteArrayList<>();
+        subscribedUsers = new CopyOnWriteArrayList<>();
+    }
+
+    public void populateData() {
+        DatabaseManager db = Server.getServerInstance().getDatabaseManager();
+        messages.addAll(db.get_messages(channelIdentifier));
+        subscribedUsers.addAll(db.get_channelMembers(channelIdentifier));
     }
 
     /**
@@ -61,6 +73,25 @@ public class Channel implements Serializable {
     }
 
 
+
+    public boolean equals(Channel channel) {
+        return channel.getChannelIdentifier() == this.channelIdentifier;
+    }
+
+    public List<Message> getMessages() {
+        return new ArrayList<>(messages);
+    }
+
+    public List<User> getMembers() {
+        return new ArrayList<>(subscribedUsers);
+    }
+
+
+    public void removeSubscribedMember(long memberIdentifier) {
+
+    }
+
+    public void removeMessage(long messageIdentifier) {}
 
 
 
