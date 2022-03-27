@@ -1,17 +1,25 @@
 package xyz.iconc.dev.server;
 
+import xyz.iconc.dev.api.ServerAPI;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class Server {
     public static final int PORT = 28235;
     public static final int THREAD_COUNT = 4;
     public static final long UNIX_EPOCH_MILLISECONDS_START = 1636752382880L; // Epoch time in milliseconds of project start
+
     private ServerState serverState;
     private static Configuration configuration;
     private final DatabaseManager databaseManager;
+    private ResourceManager resourceManager;
 
+    private ExecutorService workerThreads = Executors.newFixedThreadPool(Server.THREAD_COUNT);
 
     private static Server serverInstance;
 
-
+    private boolean stop = false;
 
     public static void main(String[] args) {
         configuration = new Configuration();
@@ -36,11 +44,22 @@ public class Server {
     public void run() {
         serverState = ServerState.STARTING;
 
-        ResourceManager resourceManager = new ResourceManager();
+        resourceManager = new ResourceManager();
 
         resourceManager.start();
 
+        ServerAPI serverAPI = new ServerAPI(databaseManager);
+
+        workerThreads.submit(new Runnable() {
+            @Override
+            public void run() {
+                serverAPI.Start();
+            }
+        });
+
         serverState = ServerState.RUNNING;
+
+
     }
 
     /**
@@ -110,6 +129,13 @@ public class Server {
         return databaseManager;
     }
 
+    public ResourceManager getResourceManager() {
+        return resourceManager;
+    }
+
+    public ExecutorService getWorkerThreads() {
+        return workerThreads;
+    }
 
     /**
      *  The current state that the server is in.

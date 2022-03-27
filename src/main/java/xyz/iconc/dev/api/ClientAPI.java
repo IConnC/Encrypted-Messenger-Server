@@ -38,7 +38,8 @@ public class ClientAPI {
 
 
     public static void main(String[] args) throws IOException {
-        //ClientAPI clientAPI = new ClientAPI();
+        ClientAPI clientAPI = new ClientAPI(5886439647917186L, "password");
+
         /*
         ClientResource clientResource = generateMessageClientResourceGET(123L, "123");
 

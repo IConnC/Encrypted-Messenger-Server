@@ -17,6 +17,7 @@ import xyz.iconc.dev.server.DatabaseManager;
 
 public class ServerAPI  extends Application {
     private static Logger LOGGER = LoggerFactory.getLogger(ServerAPI.class);
+    private Component component;
     private final Router router = new Router();
     private static DatabaseManager DATABASE_MANAGER = null;
 
@@ -32,21 +33,25 @@ public class ServerAPI  extends Application {
 
 
         // Attach application to http://localhost:9000/v1
-        Component c = new Component();
-        c.getServers().add(Protocol.HTTP, 9000);
+        component = new Component();
+        component.getServers().add(Protocol.HTTP, 9000);
 
 
-        c.getDefaultHost().attach("/v1", this);
+        component.getDefaultHost().attach("/v1", this);
 
 
+
+
+    }
+
+    public void Start() {
         try {
-            c.start();
+            component.start();
         } catch (Exception e) {
             LOGGER.error(e.toString());
             System.exit(1);
         }
-
-        LOGGER.info("Sample Web API started");
+        LOGGER.info("Web API has been started");
         LOGGER.info("URL: http://localhost:9000/v1");
     }
 

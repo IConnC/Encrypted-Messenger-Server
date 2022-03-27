@@ -18,6 +18,8 @@ public class Client {
 
     private static Client client;
 
+    private SQLiteJDBC sqLiteJDBC;
+
     private boolean exit;
 
     public Client() {
@@ -28,22 +30,45 @@ public class Client {
 
     public void run() {
         Scanner scanner = new Scanner(System.in);
+        long identifier;
+        String password;
+
 
         logger.info("Starting Client...");
-        System.out.println("Please input client identifier:");
-        long identifier = Long.parseLong(scanner.nextLine());
 
-        System.out.println("Please input password:");
-        String password = scanner.nextLine();
+        logger.info("Initializing database...");
+        sqLiteJDBC = new SQLiteJDBC();
+        logger.info("Database Initialized!");
+
+        String[] clientDetails = sqLiteJDBC.getClientDetails();
+        if (clientDetails == null) {
+            System.out.println("Please input client identifier:");
+            identifier = Long.parseLong(scanner.nextLine());
+
+            System.out.println("Please input password:");
+            password = scanner.nextLine();
+            sqLiteJDBC.addClientDetails(identifier, password);
+        } else {
+            identifier = Long.parseLong(clientDetails[0]);
+            password = clientDetails[1];
+        }
+
+
 
         ClientAPI clientAPI = new ClientAPI(identifier, password);
+
+
 
 
         System.out.println("");
 
         while (!exit) {
-
+            loop(clientAPI);
         }
+    }
+
+    private void loop(ClientAPI clientAPI) {
+
     }
 
     public static void setClient(Client _client) {

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.iconc.dev.objects.Message;
 import xyz.iconc.dev.objects.Channel;
+import xyz.iconc.dev.objects.User;
 
 import java.util.List;
 import java.util.Map;
@@ -16,9 +17,10 @@ public class ResourceManager {
     private final Logger logger = LoggerFactory.getLogger(ResourceManager.class);
     private final DatabaseManager databaseManager;
 
-    ExecutorService workerThreads = Executors.newFixedThreadPool(Server.THREAD_COUNT);
+    ExecutorService workerThreads;
 
     private CopyOnWriteArrayList<Channel> channels;
+    private CopyOnWriteArrayList<User> users;
 
 
     public ResourceManager() {
@@ -27,10 +29,14 @@ public class ResourceManager {
             logger.error("Database not initialized!");
             System.exit(1);
         }
+
+        workerThreads = Server.getServerInstance().getWorkerThreads();
         channels = new CopyOnWriteArrayList<>();
+        users = new CopyOnWriteArrayList<>();
     }
 
     public void start() {
+        initializeUsers();
         initializeChannels();
 
         /*
@@ -45,12 +51,19 @@ public class ResourceManager {
 
     }
 
+    private void initializeUsers() {
+        logger.info("Initializing in-memory users...");
+        users.clear();
+        users.addAll(databaseManager.get_accounts());
+        logger.info("Successfully initialized in-memory users!");
+    }
+
     private void initializeChannels() {
+        AtomicInteger runningPopulations = new AtomicInteger(0);
 
         logger.info("Initializing in-memory channels...");
         channels.clear();
         // Gets all channels from database and populates all of their data
-        AtomicInteger runningPopulations = new AtomicInteger(0);
         for (Channel channel : databaseManager.get_channels()) {
             runningPopulations.set(runningPopulations.intValue() + 1); // Adds a thread as working
             workerThreads.submit(new Runnable() {
@@ -75,13 +88,19 @@ public class ResourceManager {
         logger.info("Successfully loaded all channels into memory!");
     }
 
+    public User getUser(long identifier) {
+        for (User user : users) {
+            if (user.getUserIdentifier() == identifier) return user;
+        }
+        return null;
+    }
 
     /**
      *
      * @param channel Channel to find in the in-memory store
      * @return Proper channel object
      */
-    private Channel getChannel(Channel channel) {
+    public Channel getChannel(Channel channel) {
         return getChannel(channel.getChannelIdentifier());
     }
 
@@ -90,7 +109,10 @@ public class ResourceManager {
      * @param channelIdentifier Channel identifier to find in the in-memory store
      * @return Proper channel object
      */
-    private Channel getChannel(long channelIdentifier) {
+    public Channel getChannel(long channelIdentifier) {
+        for (Channel channel : channels) {
+            if (channel.getChannelIdentifier() == channelIdentifier) return channel;
+        }
         return null;
     }
 
@@ -101,8 +123,9 @@ public class ResourceManager {
                 databaseManager.insert_message(message);
             }
         });
-
     }
+
+
 
     public static void main(String[] args) {
 

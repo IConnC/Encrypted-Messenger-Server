@@ -1,5 +1,6 @@
 package xyz.iconc.dev.api;
 
+import org.bouncycastle.jcajce.provider.keystore.bc.BcKeyStoreSpi;
 import org.restlet.security.LocalVerifier;
 import org.restlet.security.SecretVerifier;
 import org.slf4j.Logger;

@@ -9,9 +9,6 @@ public interface UserResource extends BaseResource {
     @Get("json")
     public User retrieve();
 
-    @Put("json")
-    public void store(User contact);
-
     @Delete("json")
     public void remove();
 }

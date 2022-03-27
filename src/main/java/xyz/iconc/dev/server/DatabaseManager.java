@@ -171,6 +171,28 @@ public class DatabaseManager implements IReady {
         return channels;
     }
 
+    public List<User> get_accounts() {
+        String sql = "SELECT * FROM accounts";
+        List<User> users = new ArrayList<>();
+
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            ResultSet rs = stmt.getResultSet();
+
+            while (rs.next()) {
+                users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(4),
+                        rs.getString(5), rs.getLong(6), rs.getInt(7)));
+            }
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        return users;
+    }
+
     public User get_account(long identifier) {
         String sql = "SELECT * FROM accounts WHERE user_identifier=?";
 

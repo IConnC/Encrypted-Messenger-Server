@@ -8,9 +8,9 @@ import java.io.Serializable;
 public class User implements Serializable {
     private final long userIdentifier;
     private String username;
-    private String hashedPassword;
+    protected String hashedPassword;
 
-    private Object salt;
+    protected Object salt;
     private long dateRegistered;
     private int accountType;
 
@@ -87,7 +87,6 @@ public class User implements Serializable {
         return new User(uuid.getIdentifier(), _username, hashedPasswordBase64, salt,
                 uuid.getEpochTime(), 0);
     }
-
 
     /**
      * Generates and returns a randomized salt.
