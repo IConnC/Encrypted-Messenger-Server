@@ -46,6 +46,8 @@ public class ResourceManager {
     }
 
     private void initializeChannels() {
+
+        logger.info("Initializing in-memory channels...");
         channels.clear();
         // Gets all channels from database and populates all of their data
         AtomicInteger runningPopulations = new AtomicInteger(0);
@@ -70,6 +72,7 @@ public class ResourceManager {
                 System.exit(1);
             }
         }
+        logger.info("Successfully loaded all channels into memory!");
     }
 
 

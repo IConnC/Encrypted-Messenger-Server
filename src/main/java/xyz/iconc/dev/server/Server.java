@@ -38,7 +38,6 @@ public class Server {
 
         ResourceManager resourceManager = new ResourceManager();
 
-        System.out.println("here");
         resourceManager.start();
 
         serverState = ServerState.RUNNING;
