@@ -4,9 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SQLiteJDBC {
-    private static final String ACCOUNT_INFORMATION_TABLE_CREATION_SQL = "";
+    private static final String ACCOUNT_INFORMATION_TABLE_CREATION_SQL = "create table client_details " +
+            "(identifier bigint(19) not null constraint client_details_pk primary key, password   text(256)  " +
+            "not null); create unique index client_details_identifier_uindex on client_details (identifier);";
     private static final String CHANNEL_TABLE_CREATION_SQL = "";
     private static final String MESSAGE_TABLE_CREATION_SQL = "";
 
@@ -16,6 +20,10 @@ public class SQLiteJDBC {
     Connection connection;
 
     public SQLiteJDBC() {
+        Map<String, String> creationMap = new HashMap<>();
+
+        creationMap.put("client_details", ACCOUNT_INFORMATION_TABLE_CREATION_SQL);
+
         logger.debug("Opening database...");
         try {
             Class.forName("org.sqlite.JDBC");
@@ -30,13 +38,22 @@ public class SQLiteJDBC {
 
         logger.debug("Verifying database integrity...");
         try {
-            Statement statement = connection.createStatement();
-            statement.close();
+
+            PreparedStatement stmt;
+            for (String key : creationMap.keySet()) {
+                stmt = connection.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='" + key + "';");
+                stmt.execute();
+                if (!stmt.getResultSet().next()) {
+                    connection.createStatement().execute(creationMap.get(key));
+                }
+                stmt.close();
+            }
 
         } catch (Exception e) {
             logger.error("Error verifying database integrity...\n" + e.toString());
             System.exit(1);
         }
+        logger.debug("Successfully validated database integrity!");
     }
 
     public void addClientDetails(long identifier, String password) {
@@ -83,11 +100,6 @@ public class SQLiteJDBC {
             System.exit(1);
         }
         return output;
-    }
-
-
-    private void generateTables() {
-
     }
 
 
