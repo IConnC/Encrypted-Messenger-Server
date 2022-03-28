@@ -4,8 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.iconc.dev.objects.Message;
 import xyz.iconc.dev.objects.Channel;
+import xyz.iconc.dev.objects.UUID;
 import xyz.iconc.dev.objects.User;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -19,8 +21,8 @@ public class ResourceManager {
 
     ExecutorService workerThreads;
 
-    private CopyOnWriteArrayList<Channel> channels;
-    private CopyOnWriteArrayList<User> users;
+    private final CopyOnWriteArrayList<Channel> channels;
+    private final CopyOnWriteArrayList<User> users;
 
 
     public ResourceManager() {
@@ -94,6 +96,36 @@ public class ResourceManager {
         }
         return null;
     }
+
+    public List<Message> getMessagesFromEpoch(long channelIdentifier, long epoch) {
+        List<Message> messages = new ArrayList<>();
+
+        for (Channel channel : channels) {
+            if (channel.getChannelIdentifier() == channelIdentifier) {
+                for (Message message : channel.getMessages()) {
+                    if (new UUID(message.getMessageIdentifier()).getEpochTime() >= epoch) {
+                        messages.add(message);
+                    }
+                }
+                break;
+            }
+        }
+
+        return messages;
+    }
+
+    public Message getMessage(long identifier, long channelIdentifier) {
+        for (Channel _channel : channels) {
+            if (_channel.getChannelIdentifier() == channelIdentifier) {
+                for (Message message : _channel.getMessages()) {
+                    if (message.getMessageIdentifier() == identifier) return message;
+                }
+                break;
+            }
+        }
+        return null;
+    }
+
 
     /**
      *

@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.iconc.dev.api.server.serverResources.BulkMessageServerResource;
 import xyz.iconc.dev.api.server.serverResources.MessageServerResource;
+import xyz.iconc.dev.api.server.serverResources.PollServerResource;
 import xyz.iconc.dev.api.server.serverResources.UserServerResource;
 import xyz.iconc.dev.server.DatabaseManager;
 
@@ -89,6 +90,9 @@ public class ServerAPI  extends Application {
         router.attach("/message/{identifier}", MessageServerResource.class);
         router.attach("/message", MessageServerResource.class);
         router.attach("/message/", MessageServerResource.class);
+
+        router.attach("/poll", PollServerResource.class);
+        router.attach("/poll/", PollServerResource.class);
 
         return router;
     }
