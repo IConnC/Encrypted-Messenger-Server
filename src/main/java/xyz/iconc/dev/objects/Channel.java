@@ -20,12 +20,11 @@ public class Channel implements Serializable {
      * Only use if Channel is already created.
      *
      * @param _identifier UUID identifier object
-     * @param _timestamp UUID timestamp of creation
      */
-    public Channel(long _identifier, String _channelName, long _timestamp) {
+    public Channel(long _identifier, String _channelName) {
         channelIdentifier = _identifier;
         channelName = _channelName;
-        creationEpoch = _timestamp;
+        creationEpoch = new UUID(_identifier).getEpochTime();
 
         messages = new CopyOnWriteArrayList<>();
         subscribedUsers = new CopyOnWriteArrayList<>();
@@ -69,7 +68,7 @@ public class Channel implements Serializable {
 
     public static Channel CreateChannel(String channelName) {
         UUID uuid = new UUID(NetworkObjectType.CHANNEL);
-        return new Channel(uuid.getIdentifier(), channelName, uuid.getEpochTime());
+        return new Channel(uuid.getIdentifier(), channelName);
     }
 
 

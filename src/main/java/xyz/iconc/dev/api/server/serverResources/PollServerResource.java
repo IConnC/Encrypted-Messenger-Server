@@ -1,7 +1,7 @@
 package xyz.iconc.dev.api.server.serverResources;
 
 import org.restlet.resource.ServerResource;
-import xyz.iconc.dev.api.shared.objects.PollObject;
+import xyz.iconc.dev.objects.PollObject;
 import xyz.iconc.dev.api.shared.resources.PollResource;
 
 public class PollServerResource extends ServerResource implements PollResource {

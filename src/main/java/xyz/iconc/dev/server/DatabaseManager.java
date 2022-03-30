@@ -129,8 +129,7 @@ public class DatabaseManager implements IReady {
 
 
             while (rs.next()) {
-                channelMembers.add(
-                        new User(rs.getLong(2)));
+                channelMembers.add(new User(rs.getLong(2)));
             }
 
             rs.close();
@@ -143,8 +142,44 @@ public class DatabaseManager implements IReady {
         return channelMembers;
     }
 
+    public List<Channel> getSubscribedChannels(long userIdentifier) {
+        String getChannelsSQL = "SELECT channel_identifier FROM channel_members WHERE user_identifier=?";
+        String getChannelInfoSQL = "SELECT channel_name FROM channels WHERE channel_identifier=?";
+
+        List<Channel> channels = new ArrayList<>();
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(getChannelsSQL);
+            stmt.setLong(1, userIdentifier);
+            stmt.execute();
+
+            ResultSet rs = stmt.getResultSet();
+
+            while (rs.next()) {
+                PreparedStatement ps = connection.prepareStatement(getChannelInfoSQL);
+                ps.setLong(1, rs.getLong(1));
+                ps.execute();
+                ResultSet rs2 = ps.getResultSet();
+                rs2.next();
+
+                channels.add(new Channel(rs.getLong(1), rs2.getString(1)));
+                ps.close();
+                rs2.next();
+            }
+
+            rs.close();
+            stmt.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return channels;
+    }
+
     public List<Channel> get_channels() {
-        String sql = "SELECT * FROM channels";
+        String sql = "SELECT channel_identifier,channel_name FROM channels";
 
         List<Channel> channels = new ArrayList<>();
 
@@ -157,8 +192,7 @@ public class DatabaseManager implements IReady {
 
 
             while (rs.next()) {
-                channels.add(new Channel(rs.getLong(1),
-                        rs.getString(2), rs.getLong(3)));
+                channels.add(new Channel(rs.getLong(1), rs.getString(2)));
             }
 
             rs.close();
@@ -181,8 +215,7 @@ public class DatabaseManager implements IReady {
             ResultSet rs = stmt.getResultSet();
 
             while (rs.next()) {
-                users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(4),
-                        rs.getString(5), rs.getLong(6), rs.getInt(7)));
+                users.add(new User(rs.getLong(1)));
             }
             rs.close();
             stmt.close();
@@ -207,9 +240,8 @@ public class DatabaseManager implements IReady {
             ResultSet rs = statement.executeQuery();
 
             user = new User(rs.getLong(1), rs.getString(2),
-                    rs.getString(4), rs.getString(5),
-                    rs.getLong(6), rs.getInt(7));
-
+                    rs.getString(3), rs.getLong(4),
+                    rs.getLong(5), (Channel[]) getSubscribedChannels(identifier).toArray());
 
             rs.close();
             statement.close();
@@ -219,7 +251,6 @@ public class DatabaseManager implements IReady {
             return null;
         }
         return user;
-
     }
 
     /**
@@ -231,7 +262,7 @@ public class DatabaseManager implements IReady {
     public boolean insert_account(User user) {
         if (!readyState.get()) return false;
 
-        String query = "INSERT INTO accounts VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO accounts VALUES (?, ?, ?, ?, ?)";
 
 
 
@@ -245,11 +276,9 @@ public class DatabaseManager implements IReady {
 
             statement.setString(3, user.getHashedPassword());
 
-            statement.setString(4, (String) user.getSalt());
-
             statement.setLong(4, user.getDateRegistered());
 
-            statement.setInt(5, user.getAccountType());
+            statement.setLong(5, user.getLastMessageReceivedEpoch());
 
             statement.execute();
             statement.close();
@@ -357,7 +386,7 @@ public class DatabaseManager implements IReady {
     public boolean update_channelName(long channelIdentifier, String channelName) {
         if (!isReady()) return false;
 
-        String sql = "UPDATE channels SET channel_name=? WHERE channel_id=?;";
+        String sql = "UPDATE channels SET channel_name=? WHERE channel_identifier=?;";
 
         PreparedStatement statement;
         try {
@@ -457,7 +486,7 @@ public class DatabaseManager implements IReady {
 
         if (!isReady()) return false;
 
-        String sql = "DELETE FROM channel_members WHERE userIdentifier=?, channelIdentfifier=?";
+        String sql = "DELETE FROM channel_members WHERE user_identifier=? AND channel_identifier=?";
 
         PreparedStatement statement;
 

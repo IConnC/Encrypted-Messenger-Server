@@ -2,6 +2,7 @@ package xyz.iconc.dev.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.iconc.dev.objects.PollObject;
 import xyz.iconc.dev.objects.Message;
 import xyz.iconc.dev.objects.Channel;
 import xyz.iconc.dev.objects.UUID;
@@ -9,10 +10,8 @@ import xyz.iconc.dev.objects.User;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ResourceManager {
@@ -90,6 +89,15 @@ public class ResourceManager {
         logger.info("Successfully loaded all channels into memory!");
     }
 
+    public PollObject pollUser(long identifier) {
+        User user = getUser(identifier);
+
+
+
+
+        return null;
+    }
+
     public User getUser(long identifier) {
         for (User user : users) {
             if (user.getUserIdentifier() == identifier) return user;
@@ -113,6 +121,8 @@ public class ResourceManager {
 
         return messages;
     }
+
+
 
     public Message getMessage(long identifier, long channelIdentifier) {
         for (Channel _channel : channels) {
@@ -156,6 +166,7 @@ public class ResourceManager {
             }
         });
     }
+
 
 
 

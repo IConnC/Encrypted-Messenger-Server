@@ -1,4 +1,4 @@
-package xyz.iconc.dev.api.shared.objects;
+package xyz.iconc.dev.objects;
 
 import xyz.iconc.dev.objects.Message;
 
@@ -8,7 +8,7 @@ import java.util.List;
 public class PollObject implements Serializable {
     private Message[] newMessages;
 
-    public PollObject(long userIdentifier) {
+    public PollObject(long userIdentifier, Message[] messages) {
 
     }
 }
