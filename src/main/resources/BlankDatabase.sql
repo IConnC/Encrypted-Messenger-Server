@@ -1,11 +1,11 @@
 create table accounts
 (
-    user_identifier  bigint   not null
+    user_identifier             bigint           not null
         primary key,
-    username         tinytext not null,
-    hashed_password  text     not null,
-    salt             text     not null,
-    epoch_registered bigint   not null,
+    username                    tinytext         not null,
+    hashed_password             text             not null,
+    epoch_registered            bigint           not null,
+    last_message_received_epoch bigint default 0 not null,
     constraint accounts2_hashed_password_uindex
         unique (hashed_password) using hash,
     constraint accounts2_user_id_uindex
