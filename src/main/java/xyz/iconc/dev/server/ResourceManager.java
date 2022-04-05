@@ -62,12 +62,9 @@ public class ResourceManager {
         // Gets all channels from database and populates all of their data
         for (User user : databaseManager.get_accounts()) {
             runningPopulations.set(runningPopulations.intValue() + 1); // Adds a thread as working
-            workerThreads.submit(new Runnable() {
-                @Override
-                public void run() {
-                    user.populateData();
-                    runningPopulations.set(runningPopulations.intValue() - 1); // Signals thread is finished
-                }
+            workerThreads.submit(() -> {
+                user.populateData();
+                runningPopulations.set(runningPopulations.intValue() - 1); // Signals thread is finished
             });
 
             users.add(user);

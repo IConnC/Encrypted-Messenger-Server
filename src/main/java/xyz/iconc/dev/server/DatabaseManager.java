@@ -236,7 +236,6 @@ public class DatabaseManager implements IReady {
         try {
             statement = connection.prepareStatement(sql);
 
-            System.out.println(identifier);
             statement.setLong(1, identifier);
 
             ResultSet rs = statement.executeQuery();
