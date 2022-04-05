@@ -1,9 +1,10 @@
 package xyz.iconc.dev.api.shared.resources;
 
 import org.restlet.resource.Get;
-import xyz.iconc.dev.objects.PollObject;
+import xyz.iconc.dev.objects.Channel;
+import xyz.iconc.dev.objects.Message;
 
 public interface PollResource {
     @Get("json")
-    public PollObject retrieve();
+    public Message[] retrieve();
 }

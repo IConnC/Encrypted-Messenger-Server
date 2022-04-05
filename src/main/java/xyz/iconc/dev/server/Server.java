@@ -15,7 +15,7 @@ public class Server {
     private final DatabaseManager databaseManager;
     private ResourceManager resourceManager;
 
-    private ExecutorService workerThreads = Executors.newFixedThreadPool(Server.THREAD_COUNT);
+    private final ExecutorService workerThreads = Executors.newFixedThreadPool(Server.THREAD_COUNT);
 
     private static Server serverInstance;
 

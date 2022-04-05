@@ -2,11 +2,11 @@ package xyz.iconc.dev.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xyz.iconc.dev.objects.PollObject;
 import xyz.iconc.dev.objects.Message;
 import xyz.iconc.dev.objects.Channel;
 import xyz.iconc.dev.objects.UUID;
 import xyz.iconc.dev.objects.User;
+import xyz.iconc.dev.server.utilities.Utility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +53,35 @@ public class ResourceManager {
     }
 
     private void initializeUsers() {
+
         logger.info("Initializing in-memory users...");
         users.clear();
-        users.addAll(databaseManager.get_accounts());
+
+        AtomicInteger runningPopulations = new AtomicInteger(0);
+
+        // Gets all channels from database and populates all of their data
+        for (User user : databaseManager.get_accounts()) {
+            runningPopulations.set(runningPopulations.intValue() + 1); // Adds a thread as working
+            workerThreads.submit(new Runnable() {
+                @Override
+                public void run() {
+                    user.populateData();
+                    runningPopulations.set(runningPopulations.intValue() - 1); // Signals thread is finished
+                }
+            });
+
+            users.add(user);
+        }
+        // Ensures all channel data is populated before proceeding
+        while (runningPopulations.intValue() != 0) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                logger.error(e.toString());
+                System.exit(1);
+            }
+        }
+
         logger.info("Successfully initialized in-memory users!");
     }
 
@@ -89,13 +115,30 @@ public class ResourceManager {
         logger.info("Successfully loaded all channels into memory!");
     }
 
-    public PollObject pollUser(long identifier) {
+    public Message[] pollUser(long identifier) {
         User user = getUser(identifier);
 
+        List<Message> messages = new ArrayList<>();
+
+        for (Channel channel : user.getSubscribedChannels()) {
+            messages.addAll(getMessagesFromEpoch(channel.getChannelIdentifier(), user.getLastMessageReceivedEpoch()));
+        }
+        long epoch = Utility.GetUnixEpoch();
+        user.setLastMessageReceivedEpoch(epoch);
+
+        workerThreads.submit(() -> {
+            databaseManager.update_account_last_message_received_epoch(
+                    user.getUserIdentifier(), epoch);
+        });
 
 
+        Message[] messagesArray = new Message[messages.size()];
+        for (int i=0; i < messagesArray.length; i++) {
+            messagesArray[i] = messages.get(i);
+        }
 
-        return null;
+
+        return messagesArray;
     }
 
     public User getUser(long identifier) {

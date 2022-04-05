@@ -4,6 +4,7 @@ import xyz.iconc.dev.objects.*;
 import xyz.iconc.dev.server.objects.IReady;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -235,13 +236,22 @@ public class DatabaseManager implements IReady {
         try {
             statement = connection.prepareStatement(sql);
 
+            System.out.println(identifier);
             statement.setLong(1, identifier);
 
             ResultSet rs = statement.executeQuery();
 
+            rs.next();
+
+            List<Channel> subscribedChannels = getSubscribedChannels(identifier);
+            Channel[] subscribedChannelsArray = new Channel[subscribedChannels.size()];
+            for (int i=0; i<subscribedChannels.size(); i++) {
+                subscribedChannelsArray[i] = subscribedChannels.get(i);
+            }
+
             user = new User(rs.getLong(1), rs.getString(2),
                     rs.getString(3), rs.getLong(4),
-                    rs.getLong(5), (Channel[]) getSubscribedChannels(identifier).toArray());
+                    rs.getLong(5), subscribedChannelsArray);
 
             rs.close();
             statement.close();
@@ -251,6 +261,48 @@ public class DatabaseManager implements IReady {
             return null;
         }
         return user;
+    }
+
+    public void update_account(User user) {
+        if (!user.isPopulated()) return;
+
+        String sql = "UPDATE accounts SET username = ?, hashed_password=?, epoch_registered=?," +
+                " last_message_received_epoch = ? WHERE user_identifier=?;";
+
+        PreparedStatement stmt;
+        try {
+            stmt = connection.prepareStatement(sql);
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getHashedPassword());
+            stmt.setLong(3, user.getDateRegistered());
+            stmt.setLong(4, user.getLastMessageReceivedEpoch());
+            stmt.setLong(5, user.getUserIdentifier());
+
+            stmt.execute();
+            stmt.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    public boolean update_account_last_message_received_epoch(long userIdentifier, long epoch) {
+        String sql = "UPDATE accounts SET last_message_received_epoch = ? WHERE user_identifier=?;";
+
+        PreparedStatement stmt;
+        try {
+            stmt = connection.prepareStatement(sql);
+
+            stmt.setLong(1, epoch);
+            stmt.setLong(2, userIdentifier);
+            stmt.execute();
+            stmt.close();
+        } catch (SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     /**

@@ -12,7 +12,7 @@ public class User implements Serializable {
     private long dateRegistered;
 
     private Channel[] subscribedChannels;
-    private long lastMessageReceivedEpoch = 0L;
+    private long lastMessageReceivedEpoch;
 
     private boolean isPopulated;
 
