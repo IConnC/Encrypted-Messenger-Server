@@ -1,10 +1,10 @@
-# Encrypticator Server-Side Code
+# The Encrypticator Project
 Encrypticator stands for Encrypted Communicator and is my High School Senior Capstone Project.
 
 I plan on developing this application throughout the year of 2021-2022 and ending with a demo ready test for my final presentation.
 
 
-Encrypticator is a secured messaging platform that encrypts users messages on both the server and during transit. Encrypticator’s primary goal is to grant users more privacy in their lives from government agencies, corporations, and cybercriminals.
+Encrypticator is a secured messaging platform that encrypts users messages on both the server and during transit. Encrypticator’s primary goal is to grant users more privacy in their lives from government agencies, corporations, and cybercriminals. While it is entirely possible that I will not complete the project with it's large scope, I plan on completing as much of it as possible. This project will most likely be a learning opportunity for myself and a challenge for myself to work on a larger-scale project.
 
 
 ## Initial Proposal
@@ -14,7 +14,7 @@ Every day, massive corporations and cyber-criminals violate people’s online pr
 1. Stay motivated to complete my year-long project.
 2. Create a working product that can be used in my everyday life.
 3. Gain a stronger understanding of programming and programming structures.
-4. Learn about technologies I haven’t touched before, such as SHA-256 encryption.
+4. Learn about technologies I haven’t touched before, such as ED25519 assymetric encryption.
 5. Gain connections in the Computer Science industry.
 
 
