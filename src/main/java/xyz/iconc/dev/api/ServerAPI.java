@@ -3,55 +3,57 @@ package xyz.iconc.dev.api;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
-import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.routing.Router;
-import org.restlet.routing.VirtualHost;
 import org.restlet.security.ChallengeAuthenticator;
-import org.restlet.security.MemoryRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.iconc.dev.api.server.serverResources.BulkMessageServerResource;
 import xyz.iconc.dev.api.server.serverResources.MessageServerResource;
+import xyz.iconc.dev.api.server.serverResources.PollServerResource;
 import xyz.iconc.dev.api.server.serverResources.UserServerResource;
-import xyz.iconc.dev.api.shared.resources.BulkMessageResource;
 import xyz.iconc.dev.server.DatabaseManager;
+import xyz.iconc.dev.server.ResourceManager;
 
-import javax.sql.DataSource;
 
 public class ServerAPI  extends Application {
     private static Logger LOGGER = LoggerFactory.getLogger(ServerAPI.class);
+    private Component component;
     private final Router router = new Router();
-    private final DatabaseManager databaseManager;
+    private static ResourceManager RESOURCE_MANAGER = null;
 
-    public ServerAPI(DatabaseManager databaseManager) {
+    public ServerAPI(ResourceManager resourceManager) {
         super();
         LOGGER.info("Application starting...");
 
 
         LOGGER.info("Attempting connection with database...");
-        this.databaseManager = databaseManager;
+        RESOURCE_MANAGER = resourceManager;
 
         LOGGER.info("Connected to database!");
 
 
         // Attach application to http://localhost:9000/v1
-        Component c = new Component();
-        c.getServers().add(Protocol.HTTP, 9000);
+        component = new Component();
+        component.getServers().add(Protocol.HTTP, 9000);
 
 
-        c.getDefaultHost().attach("/v1", this);
+        component.getDefaultHost().attach("/v1", this);
 
 
+
+
+    }
+
+    public void Start() {
         try {
-            c.start();
+            component.start();
         } catch (Exception e) {
             LOGGER.error(e.toString());
             System.exit(1);
         }
-
-        LOGGER.info("Sample Web API started");
+        LOGGER.info("Web API has been started");
         LOGGER.info("URL: http://localhost:9000/v1");
     }
 
@@ -85,7 +87,13 @@ public class ServerAPI  extends Application {
         Router router = new Router(getContext());
 
         router.attach("/user/{identifier}", UserServerResource.class);
+
         router.attach("/message/{identifier}", MessageServerResource.class);
+        router.attach("/message", MessageServerResource.class);
+        router.attach("/message/", MessageServerResource.class);
+
+        router.attach("/poll", PollServerResource.class);
+        router.attach("/poll/", PollServerResource.class);
 
         return router;
     }
@@ -113,9 +121,11 @@ public class ServerAPI  extends Application {
         return publicRouter;
     }
 
+    public static ResourceManager getResourceManager() {
+        return RESOURCE_MANAGER;
+    }
+
     public static void main(String[] args) throws Exception {
-        DatabaseManager databaseManager = new DatabaseManager(true);
-        ServerAPI server = new ServerAPI(databaseManager);
     }
 
 }

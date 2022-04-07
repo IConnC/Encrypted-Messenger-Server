@@ -1,14 +1,12 @@
 package xyz.iconc.dev.server;
 
-import org.mariadb.jdbc.internal.util.dao.Identifier;
-import xyz.iconc.dev.server.networkObjects.*;
+import xyz.iconc.dev.objects.*;
 import xyz.iconc.dev.server.objects.IReady;
-
-import javax.sql.DataSource;
-import java.io.PrintWriter;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Logger;
 
 public class DatabaseManager implements IReady {
     private final AtomicBoolean readyState;
@@ -50,7 +48,7 @@ public class DatabaseManager implements IReady {
 
 
     public Message get_message(long identifier) {
-        String sql = "SELECT FROM messages WHERE message_identifier=?";
+        String sql = "SELECT * FROM messages WHERE message_identifier=?";
 
         Message message;
 
@@ -60,7 +58,14 @@ public class DatabaseManager implements IReady {
 
             statement.setLong(1, identifier);
 
-            statement.execute();
+            ResultSet rs = statement.executeQuery();
+
+            rs.next();
+
+            message = new Message(identifier, rs.getLong(3),
+                    rs.getLong(2), rs.getString(4));
+
+            rs.close();
             statement.close();
 
         } catch (SQLException e) {
@@ -70,6 +75,36 @@ public class DatabaseManager implements IReady {
         return message;
     }
 
+    public List<Message> get_messages(long channelIdentifier) {
+        String sql = "SELECT * FROM messages WHERE channel_sent_id=?";
+
+        List<Message> messages = new ArrayList<>();
+
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(sql);
+
+            statement.setLong(1, channelIdentifier);
+
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                Message tempMessage = new Message(rs.getLong(1),
+                        rs.getLong(3), channelIdentifier, rs.getString(4));
+                messages.add(tempMessage);
+            }
+
+            rs.close();
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+
+        return messages;
+    }
 
     /**
      *  Overload for get_message(long identifier)
@@ -80,17 +115,205 @@ public class DatabaseManager implements IReady {
         return get_message(uuid.getIdentifier());
     }
 
+    public List<User> get_channelMembers(long channelIdentifier) {
+        String sql = "SELECT * FROM channel_members WHERE channel_identifier=?";
+
+        List<User> channelMembers = new ArrayList<>();
+
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(sql);
+
+            statement.setLong(1, channelIdentifier);
+
+            ResultSet rs = statement.executeQuery();
+
+
+            while (rs.next()) {
+                channelMembers.add(new User(rs.getLong(2)));
+            }
+
+            rs.close();
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return channelMembers;
+    }
+
+    public List<Channel> getSubscribedChannels(long userIdentifier) {
+        String getChannelsSQL = "SELECT channel_identifier FROM channel_members WHERE user_identifier=?";
+        String getChannelInfoSQL = "SELECT channel_name FROM channels WHERE channel_identifier=?";
+
+        List<Channel> channels = new ArrayList<>();
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(getChannelsSQL);
+            stmt.setLong(1, userIdentifier);
+            stmt.execute();
+
+            ResultSet rs = stmt.getResultSet();
+
+            while (rs.next()) {
+                PreparedStatement ps = connection.prepareStatement(getChannelInfoSQL);
+                ps.setLong(1, rs.getLong(1));
+                ps.execute();
+                ResultSet rs2 = ps.getResultSet();
+                rs2.next();
+
+                channels.add(new Channel(rs.getLong(1), rs2.getString(1)));
+                ps.close();
+                rs2.next();
+            }
+
+            rs.close();
+            stmt.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return channels;
+    }
+
+    public List<Channel> get_channels() {
+        String sql = "SELECT channel_identifier,channel_name FROM channels";
+
+        List<Channel> channels = new ArrayList<>();
+
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(sql);
+
+
+            ResultSet rs = statement.executeQuery();
+
+
+            while (rs.next()) {
+                channels.add(new Channel(rs.getLong(1), rs.getString(2)));
+            }
+
+            rs.close();
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return channels;
+    }
+
+    public List<User> get_accounts() {
+        String sql = "SELECT * FROM accounts";
+        List<User> users = new ArrayList<>();
+
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            ResultSet rs = stmt.getResultSet();
+
+            while (rs.next()) {
+                users.add(new User(rs.getLong(1)));
+            }
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        return users;
+    }
+
+    public User get_account(long identifier) {
+        String sql = "SELECT * FROM accounts WHERE user_identifier=?";
+
+        User user = null;
+
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(sql);
+
+            statement.setLong(1, identifier);
+
+            ResultSet rs = statement.executeQuery();
+
+            rs.next();
+
+            List<Channel> subscribedChannels = getSubscribedChannels(identifier);
+            Channel[] subscribedChannelsArray = new Channel[subscribedChannels.size()];
+            for (int i=0; i<subscribedChannels.size(); i++) {
+                subscribedChannelsArray[i] = subscribedChannels.get(i);
+            }
+
+            user = new User(rs.getLong(1), rs.getString(2),
+                    rs.getString(3), rs.getLong(4),
+                    rs.getLong(5), subscribedChannelsArray);
+
+            rs.close();
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return user;
+    }
+
+    public void update_account(User user) {
+        if (!user.isPopulated()) return;
+
+        String sql = "UPDATE accounts SET username = ?, hashed_password=?, epoch_registered=?," +
+                " last_message_received_epoch = ? WHERE user_identifier=?;";
+
+        PreparedStatement stmt;
+        try {
+            stmt = connection.prepareStatement(sql);
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getHashedPassword());
+            stmt.setLong(3, user.getDateRegistered());
+            stmt.setLong(4, user.getLastMessageReceivedEpoch());
+            stmt.setLong(5, user.getUserIdentifier());
+
+            stmt.execute();
+            stmt.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    public boolean update_account_last_message_received_epoch(long userIdentifier, long epoch) {
+        String sql = "UPDATE accounts SET last_message_received_epoch = ? WHERE user_identifier=?;";
+
+        PreparedStatement stmt;
+        try {
+            stmt = connection.prepareStatement(sql);
+
+            stmt.setLong(1, epoch);
+            stmt.setLong(2, userIdentifier);
+            stmt.execute();
+            stmt.close();
+        } catch (SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 
     /**
      * Inserts a given account object into the database.
      *
-     * @param account the account to insert into the database
+     * @param user the account to insert into the database
      * @return True if successful
      */
-    public boolean insert_account(Account account) {
+    public boolean insert_account(User user) {
         if (!readyState.get()) return false;
 
-        String query = "INSERT INTO accounts VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO accounts VALUES (?, ?, ?, ?, ?)";
 
 
 
@@ -98,17 +321,15 @@ public class DatabaseManager implements IReady {
         try {
             statement = connection.prepareStatement(query);
 
-            statement.setLong(1, account.getUserIdentifier());
+            statement.setLong(1, user.getUserIdentifier());
 
-            statement.setString(2, account.getUsername());
+            statement.setString(2, user.getUsername());
 
-            statement.setString(3, account.getHashedPassword());
+            statement.setString(3, user.getHashedPassword());
 
-            statement.setString(4, (String) account.getSalt());
+            statement.setLong(4, user.getDateRegistered());
 
-            statement.setLong(4, account.getDateRegistered());
-
-            statement.setInt(5, account.getAccountType());
+            statement.setLong(5, user.getLastMessageReceivedEpoch());
 
             statement.execute();
             statement.close();
@@ -120,7 +341,6 @@ public class DatabaseManager implements IReady {
         return true;
 
     }
-
 
     /**
      * Inserts given channel object into database.
@@ -174,7 +394,6 @@ public class DatabaseManager implements IReady {
         return true;
     }
 
-
     /**
      *  Inserts a new message into the database
      *
@@ -208,7 +427,6 @@ public class DatabaseManager implements IReady {
         return true;
     }
 
-
     /**
      * Updates a channels name according to the new provided name.
      *
@@ -219,7 +437,7 @@ public class DatabaseManager implements IReady {
     public boolean update_channelName(long channelIdentifier, String channelName) {
         if (!isReady()) return false;
 
-        String sql = "UPDATE channels SET channel_name=? WHERE channel_id=?;";
+        String sql = "UPDATE channels SET channel_name=? WHERE channel_identifier=?;";
 
         PreparedStatement statement;
         try {
@@ -239,8 +457,6 @@ public class DatabaseManager implements IReady {
 
         return true;
     }
-
-
 
     private boolean delete_fromIdentifier(String tableName, String identifierPrefix, long identifier) {
         if (!isReady()) return false;
@@ -321,7 +537,7 @@ public class DatabaseManager implements IReady {
 
         if (!isReady()) return false;
 
-        String sql = "DELETE FROM channel_members WHERE userIdentifier=?, channelIdentfifier=?";
+        String sql = "DELETE FROM channel_members WHERE user_identifier=? AND channel_identifier=?";
 
         PreparedStatement statement;
 
@@ -342,7 +558,6 @@ public class DatabaseManager implements IReady {
         return true;
     }
 
-
     /**
      * Initializes the Database connection and stores it as the variable connection.
      */
@@ -353,7 +568,6 @@ public class DatabaseManager implements IReady {
             e.printStackTrace();
         }
     }
-
 
     public void shutdown() {
         readyState.set(false);
@@ -388,10 +602,7 @@ public class DatabaseManager implements IReady {
     public static void main(String[] args) throws InterruptedException {
         DatabaseManager databaseManager = new DatabaseManager(true);
 
-        databaseManager.update_channelName(6969L, "NEW CHANNEL NAME");
-        //databaseManager.insert_createAccount("username", "password");
-        //databaseManager.insert_createChannel("test");
-
+        System.out.println(databaseManager.get_message(123));
     }
 
     /**
@@ -412,52 +623,4 @@ public class DatabaseManager implements IReady {
         }
         return null;
     }
-
-    public class ApiDataSource implements DataSource {
-        @Override
-        public Connection getConnection() throws SQLException {
-            return null;
-        }
-
-        @Override
-        public Connection getConnection(String username, String password) throws SQLException {
-            return null;
-        }
-
-        @Override
-        public <T> T unwrap(Class<T> iface) throws SQLException {
-            return null;
-        }
-
-        @Override
-        public boolean isWrapperFor(Class<?> iface) throws SQLException {
-            return false;
-        }
-
-        @Override
-        public PrintWriter getLogWriter() throws SQLException {
-            return null;
-        }
-
-        @Override
-        public void setLogWriter(PrintWriter out) throws SQLException {
-
-        }
-
-        @Override
-        public void setLoginTimeout(int seconds) throws SQLException {
-
-        }
-
-        @Override
-        public int getLoginTimeout() throws SQLException {
-            return 0;
-        }
-
-        @Override
-        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-            return null;
-        }
-    }
-
 }
