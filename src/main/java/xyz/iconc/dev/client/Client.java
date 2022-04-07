@@ -58,17 +58,14 @@ public class Client {
         ClientAPI clientAPI = new ClientAPI(identifier, password);
 
 
-
-
         System.out.println("");
 
+
+        String input;
         while (!exit) {
-            loop(clientAPI);
+            input = scanner.nextLine();
+            System.out.println(input);
         }
-    }
-
-    private void loop(ClientAPI clientAPI) {
-
     }
 
     public static void setClient(Client _client) {
