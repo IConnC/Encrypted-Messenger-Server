@@ -1,5 +1,6 @@
 package xyz.iconc.dev.server;
 
+import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.iconc.dev.objects.Message;
@@ -176,6 +177,16 @@ public class ResourceManager {
         return null;
     }
 
+    public Message getMessage(long identifier) {
+        for (Channel _channel : channels) {
+            for (Message message : _channel.getMessages()) {
+                if (message.getMessageIdentifier() == identifier) return message;
+            }
+        }
+        return null;
+    }
+
+
 
     /**
      *
@@ -198,13 +209,12 @@ public class ResourceManager {
         return null;
     }
 
-    public void addMessage(Message message, Channel channel) {
-        workerThreads.submit(new Runnable() {
-            @Override
-            public void run() {
-                databaseManager.insert_message(message);
-            }
+    public void addMessage(Message message) {
+        getChannel(message.getChannelIdentifier()).addMessage(message);
+        workerThreads.submit(() -> {
+            databaseManager.insert_message(message);
         });
+
     }
 
 

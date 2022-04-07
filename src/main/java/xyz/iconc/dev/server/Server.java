@@ -48,7 +48,7 @@ public class Server {
 
         resourceManager.start();
 
-        ServerAPI serverAPI = new ServerAPI(databaseManager);
+        ServerAPI serverAPI = new ServerAPI(resourceManager);
 
         workerThreads.submit(new Runnable() {
             @Override

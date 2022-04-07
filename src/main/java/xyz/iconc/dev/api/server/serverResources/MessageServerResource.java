@@ -35,13 +35,19 @@ public class MessageServerResource extends ServerResourceAbstract implements Mes
             return;
         }
         identifier = rawIdentifier;
-        message = ServerAPI.getDatabaseManager().get_message(identifier);
+        message = ServerAPI.getResourceManager().getMessage(identifier);
+        System.out.println(message);
     }
 
     @Override
     public Message retrieve() {
         if (!identifierProvided) {
             doError(Status.CLIENT_ERROR_FORBIDDEN);
+            return null;
+        }
+
+        if (message == null) {
+            doError(Status.SERVER_ERROR_INTERNAL);
             return null;
         }
 
@@ -70,7 +76,7 @@ public class MessageServerResource extends ServerResourceAbstract implements Mes
         Message fullMessage = new Message(senderIdentifier, message.getChannelIdentifier(),
                 message.getMessageContents());
 
-        ServerAPI.getDatabaseManager().insert_message(fullMessage); // Inserts fully formed message into database
+        ServerAPI.getResourceManager().addMessage(fullMessage); // Inserts fully formed message into database
 
         return fullMessage.getMessageIdentifier(); // Returns the final UUID of the message
     }

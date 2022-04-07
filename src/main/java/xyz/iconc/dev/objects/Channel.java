@@ -90,7 +90,18 @@ public class Channel implements Serializable {
 
     }
 
-    public void removeMessage(long messageIdentifier) {}
+    public void addMessage(Message message) {
+        messages.add(message);
+    }
+
+    public void removeMessage(long messageIdentifier) {
+        for (int i=0; i<messages.size(); i++) {
+            if (messages.get(i).getMessageIdentifier() == messageIdentifier) {
+                messages.remove(i);
+                return;
+            }
+        }
+    }
 
 
 

@@ -14,21 +14,22 @@ import xyz.iconc.dev.api.server.serverResources.MessageServerResource;
 import xyz.iconc.dev.api.server.serverResources.PollServerResource;
 import xyz.iconc.dev.api.server.serverResources.UserServerResource;
 import xyz.iconc.dev.server.DatabaseManager;
+import xyz.iconc.dev.server.ResourceManager;
 
 
 public class ServerAPI  extends Application {
     private static Logger LOGGER = LoggerFactory.getLogger(ServerAPI.class);
     private Component component;
     private final Router router = new Router();
-    private static DatabaseManager DATABASE_MANAGER = null;
+    private static ResourceManager RESOURCE_MANAGER = null;
 
-    public ServerAPI(DatabaseManager databaseManager) {
+    public ServerAPI(ResourceManager resourceManager) {
         super();
         LOGGER.info("Application starting...");
 
 
         LOGGER.info("Attempting connection with database...");
-        DATABASE_MANAGER = databaseManager;
+        RESOURCE_MANAGER = resourceManager;
 
         LOGGER.info("Connected to database!");
 
@@ -120,13 +121,11 @@ public class ServerAPI  extends Application {
         return publicRouter;
     }
 
-    public static DatabaseManager getDatabaseManager() {
-        return DATABASE_MANAGER;
+    public static ResourceManager getResourceManager() {
+        return RESOURCE_MANAGER;
     }
 
     public static void main(String[] args) throws Exception {
-        DatabaseManager databaseManager = new DatabaseManager(true);
-        ServerAPI server = new ServerAPI(databaseManager);
     }
 
 }
