@@ -19,7 +19,6 @@ public class Server {
 
     private static Server serverInstance;
 
-    private boolean stop = false;
 
     public static void main(String[] args) {
         configuration = new Configuration();

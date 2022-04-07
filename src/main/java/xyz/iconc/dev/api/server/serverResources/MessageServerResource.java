@@ -47,7 +47,7 @@ public class MessageServerResource extends ServerResourceAbstract implements Mes
         }
 
         if (message == null) {
-            doError(Status.SERVER_ERROR_INTERNAL);
+            doError(Status.CLIENT_ERROR_NOT_FOUND);
             return null;
         }
 
