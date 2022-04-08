@@ -1,5 +1,7 @@
 package xyz.iconc.dev.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.iconc.dev.api.ServerAPI;
 
 import java.util.concurrent.ExecutorService;
@@ -9,6 +11,8 @@ public class Server {
     public static final int PORT = 28235;
     public static final int THREAD_COUNT = 4;
     public static final long UNIX_EPOCH_MILLISECONDS_START = 1636752382880L; // Epoch time in milliseconds of project start
+
+    private static final Logger logger = LoggerFactory.getLogger(Server.class);
 
     private ServerState serverState;
     private static Configuration configuration;
@@ -58,7 +62,24 @@ public class Server {
 
         serverState = ServerState.RUNNING;
 
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.info("Shutting down...");
+            serverState = ServerState.STOPPING;
 
+            logger.info("Shutting down worker threads...");
+            workerThreads.shutdown();
+            logger.info("Done!");
+
+            logger.info("Shutdown Complete!");
+        }));
+        while (serverState == ServerState.RUNNING) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                logger.error(e.toString());
+            }
+        }
+        terminateServer();
     }
 
     /**
@@ -67,7 +88,7 @@ public class Server {
      *  Sets the serverState variable as STOPPING when run and sets the state as STOPPED
      *  when completed.
      */
-    public void terminateServer() throws InterruptedException {
+    public void terminateServer() {
         serverState = ServerState.STOPPING;
 
 
