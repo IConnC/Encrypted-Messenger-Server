@@ -37,13 +37,12 @@ public class DatabaseManager implements IReady {
 
         connectionUrl = tempUrl;
         //DATABASE_CONNECTION_STRING("jdbc:mariadb://[host][,failoverhost][:port]/[database]"),
+    }
 
-
-
+    public void start(){
         initializeDatabaseConnection();
         //connection.getAutoCommit();
         readyState.set(true);
-
     }
 
 
