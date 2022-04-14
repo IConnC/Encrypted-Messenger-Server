@@ -53,12 +53,7 @@ public class Server {
 
         ServerAPI serverAPI = new ServerAPI(resourceManager);
 
-        workerThreads.submit(new Runnable() {
-            @Override
-            public void run() {
-                serverAPI.Start();
-            }
-        });
+        workerThreads.submit(serverAPI::Start);
 
         serverState = ServerState.RUNNING;
 
