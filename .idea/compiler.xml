@@ -10,6 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="encrypticator-server" target="8" />
       <module name="Encrypticator-Server" target="8" />
     </bytecodeTargetLevel>
   </component>

@@ -17,7 +17,7 @@ public class Server {
     private ServerState serverState;
     private static Configuration configuration;
     private final DatabaseManager databaseManager;
-    private ResourceManager resourceManager;
+    private final ResourceManager resourceManager;
 
     private final ExecutorService workerThreads = Executors.newFixedThreadPool(Server.THREAD_COUNT);
 
@@ -42,12 +42,14 @@ public class Server {
         if (configuration == null) configuration = new Configuration();
 
         databaseManager = new DatabaseManager(false);
+
+        resourceManager = new ResourceManager();
     }
 
     public void run() {
         serverState = ServerState.STARTING;
 
-        resourceManager = new ResourceManager();
+        databaseManager.start();
 
         resourceManager.start();
 
