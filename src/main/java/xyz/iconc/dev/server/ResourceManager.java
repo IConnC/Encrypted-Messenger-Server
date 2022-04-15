@@ -1,6 +1,5 @@
 package xyz.iconc.dev.server;
 
-import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.iconc.dev.objects.Message;

@@ -4,7 +4,6 @@ import xyz.iconc.dev.objects.*;
 import xyz.iconc.dev.server.objects.IReady;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 

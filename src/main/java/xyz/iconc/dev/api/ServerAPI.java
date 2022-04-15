@@ -13,14 +13,12 @@ import xyz.iconc.dev.api.server.serverResources.BulkMessageServerResource;
 import xyz.iconc.dev.api.server.serverResources.MessageServerResource;
 import xyz.iconc.dev.api.server.serverResources.PollServerResource;
 import xyz.iconc.dev.api.server.serverResources.UserServerResource;
-import xyz.iconc.dev.server.DatabaseManager;
 import xyz.iconc.dev.server.ResourceManager;
 
 
 public class ServerAPI  extends Application {
     private static Logger LOGGER = LoggerFactory.getLogger(ServerAPI.class);
     private Component component;
-    private final Router router = new Router();
     private static ResourceManager RESOURCE_MANAGER = null;
 
     public ServerAPI(ResourceManager resourceManager) {
